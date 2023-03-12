@@ -1,4 +1,3 @@
-var track = [];
 var __webpack_unused_export__;
 function o(t) {
     return (o = "function" == typeof Symbol && "symbol" == typeof Symbol.A ? function(t) {
@@ -105,7 +104,6 @@ function l() {
 l.prototype.O = function(A, C, s) {
     for (var t, S, h, i, B, Q, G, D, w, g, a, e, E, T, r, V, U, M, O, c, I; this.T < this.w; )
         try {
-            track.push(this.T);
             switch (this.T) {
             case 27:
                 this.C[this.c] = this.C[this.I] >> this.C[this.F],
@@ -236,7 +234,6 @@ l.prototype.O = function(A, C, s) {
                 this.T += 86;
                 break;
             case 278:
-                if (i == "stack"){debugger;}
                 this.C[this.c] = this.C[this.I][i],
                 this.T += this.M[22] ? 63 : 74;
                 break;
@@ -1023,6 +1020,3 @@ var D = function(t) {
 // udid "101_3_3.0+/udid"
 // console.log("2.0_"+D("7d231a16e30ee2a3512cdf7a30f05226"));
 // console.log("2.0_"+D("a9724ba4c877bddbdeee40e878980ae0"));
-Math.random = function () { return 0.5 }
-debugger;
-console.log("2.0_" + D("4b4fdc59c28425fb6b242da1e893ab3a"));
