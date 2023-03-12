@@ -141,6 +141,9 @@ globalMy.AudioContext = function AudioContext() {
     globalMy.value[name]["oncomplete"] = null;
     globalMy.value[name]["outputLatency"] = 0.04;
 
+    globalMy.value[name]["listener"] = {};
+    Object.setPrototypeOf(globalMy.value[name]["listener"], AudioListener.prototype);
+
     globalMy.value[name]["destination"] = {};
     Object.setPrototypeOf(globalMy.value[name]["destination"], AudioDestinationNode.prototype);
     var obj_name = globalMy.setfoundName(globalMy.value[name]["destination"]);

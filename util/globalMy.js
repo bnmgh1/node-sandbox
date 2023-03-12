@@ -240,8 +240,8 @@ globalMy.createMimeType = function createMimeType(type, suffixes, description) {
 // 创建事件 供dispatchEvent触发
 globalMy.createEvent = function createEvent(type) {
     if (type.indexOf("mouse") !== -1 || type === 'click') {
-        var name = globalMy.event.length;
-        globalMy.event[name] = {};
+
+        var name = globalMy.event.push({}) - 1;
         globalMy.event_value[name] = {};
         if (type.indexOf("mouse") !== -1) {
             Object.setPrototypeOf(globalMy.event[name], MouseEvent.prototype)
@@ -251,20 +251,21 @@ globalMy.createEvent = function createEvent(type) {
         var html_element = document.documentElement;
         globalMy.event_value[name]["target"] = html_element;
         globalMy.event_value[name]["srcElement"] = html_element;
-        globalMy.event_value[name]["clientX"] = globalMy.getRandomNum(500, 1700)
-        globalMy.event_value[name]["clientY"] = globalMy.getRandomNum(200, 500)
-        globalMy.event_value[name]["screenX"] = globalMy.event_value[name]["clientX"]
-        globalMy.event_value[name]["screenY"] = globalMy.getRandomNum(200, 500)
-        globalMy.event_value[name]["pageX"] = globalMy.event_value[name]["clientX"]
-        globalMy.event_value[name]["pageY"] = globalMy.event_value[name]["clientY"]
-        globalMy.event_value[name]["x"] = globalMy.event_value[name]["clientX"]
-        globalMy.event_value[name]["y"] = globalMy.event_value[name]["clientY"]
-        globalMy.event_value[name]["offsetX"] = globalMy.getRandomNum(600, 1400)
-        globalMy.event_value[name]["offsetY"] = globalMy.getRandomNum(300, 450)
-        globalMy.event_value[name]["layerX"] = globalMy.getRandomNum(600, 1400)
-        globalMy.event_value[name]["layerY"] = globalMy.getRandomNum(300, 450)
-        globalMy.event_value[name]["movementX"] = globalMy.getRandomNum(-50, 50)
-        globalMy.event_value[name]["movementY"] = globalMy.getRandomNum(-50, 50)
+        globalMy.event_value[name]["altKey"] = false;
+        // globalMy.event_value[name]["clientX"] = globalMy.getRandomNum(500, 1700)
+        // globalMy.event_value[name]["clientY"] = globalMy.getRandomNum(200, 500)
+        // globalMy.event_value[name]["screenX"] = globalMy.event_value[name]["clientX"]
+        // globalMy.event_value[name]["screenY"] = globalMy.getRandomNum(200, 500)
+        // globalMy.event_value[name]["pageX"] = globalMy.event_value[name]["clientX"]
+        // globalMy.event_value[name]["pageY"] = globalMy.event_value[name]["clientY"]
+        // globalMy.event_value[name]["x"] = globalMy.event_value[name]["clientX"]
+        // globalMy.event_value[name]["y"] = globalMy.event_value[name]["clientY"]
+        // globalMy.event_value[name]["offsetX"] = globalMy.getRandomNum(600, 1400)
+        // globalMy.event_value[name]["offsetY"] = globalMy.getRandomNum(300, 450)
+        // globalMy.event_value[name]["layerX"] = globalMy.getRandomNum(600, 1400)
+        // globalMy.event_value[name]["layerY"] = globalMy.getRandomNum(300, 450)
+        // globalMy.event_value[name]["movementX"] = globalMy.getRandomNum(-50, 50)
+        // globalMy.event_value[name]["movementY"] = globalMy.getRandomNum(-50, 50)
         globalMy.event_value[name]["type"] = type;
         globalMy.event_value[name]["timeStamp"] = Date.now() - globalMy.memory.begin_time;
 

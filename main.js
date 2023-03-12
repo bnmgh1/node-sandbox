@@ -6,10 +6,9 @@ const vm = require("vm");
 const jsdom = require("jsdom");
 const {JSDOM} = jsdom;
 var wanfeng = require("wanfeng");
-// var ws = require("nodejs-websocket");
+
 console.log("导包耗时:", +new Date - a, "毫秒");
 a = +new Date;
-// const dom = new JSDOM(`<!DOCTYPE html><p>hello world</p>`);
 
 
 var html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -20,14 +19,15 @@ var html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 <body>
 </body>
 </html>`
-// html = ``;
+html = `<div id="baxia-password" style="display: block;"><div class=" custom-dialog-wrapper" style="display: block;"><iframe id="baxia-dialog-content" frameborder="none" src="https://login.taobao.com//newlogin/login.do/_____tmd_____/punish?x5secdata=xbb285061a9d6d6ae38b7729e5a610cd201678606637a-717315356a-1443198347abczc2dl15398888102a__bx__login.taobao.com%3A443%2Fnewlogin%2Flogin.do&amp;x5step=2&amp;ncLanguage=zh_CN" style="height: 34px; position: static;"></iframe></div></div>`;
 let configure = {
     // url:"https://pastebin.com/login",
     // url: "http://epub.cnipa.gov.cn/SW/",
-    url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
+    // url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
     // url: 'https://www.zhipin.com/web/geek/job?query=%E7%88%AC%E8%99%AB&city=101190100&page=2',
     // url: 'https://www.toutiao.com/',
     // url: 'https://login.taobao.com/member/login.jhtml?spm=a21bo.jianhua.754894437.1.5af911d9ha3rTs&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F',
+    url: 'https://passport.tujia.com/PortalSite/LoginPage/?originUrl=https%3A%2F%2Fwww.tujia.com%2F',
 }
 const dom = new JSDOM(html, configure);
 
@@ -50,14 +50,28 @@ envCode += cover_function + pass_check;
 globalMy = {
     dom_window: dom.window
 };
-const sandbox = {
-    wanfeng: wanfeng,
-    globalMy: globalMy,
-    console: console,
+
+
+globalMy.newWindow = function(dom_window){
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: {
+            dom_window: dom_window
+        },
+        console: console,
+    }
+    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + ``;
+    vm.runInNewContext(code, sandbox);
+    return sandbox.zzz_mark_key;
 }
 
 // rsvmp
 function runRsVmp() {
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/rsvmp.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `
@@ -76,6 +90,11 @@ globalMy.console.log(localStorage._$rc);
 
 // boss
 function runBoss() {
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/boss.js");
     // jsdom iframe document.cookie 和 top window document cookie 值是一样的, jsdom没有实现, 是空值
 
@@ -116,6 +135,11 @@ console.log(encodeURIComponent((new window.ABC).z("et6DuZOBezkCoI40DI0QqQ9bHByFP
 
 // 知乎 x96
 function runZhihu() {
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/zhihu/zhihu.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
@@ -135,6 +159,11 @@ function runZhihu() {
 
 // 知乎 x81 没仔细扣,不一定能用
 function runX81() {
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/zhihu/x81.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
@@ -144,6 +173,11 @@ function runX81() {
 
 // ac_signature
 function runAcSign(){
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/jrtt/ac_sign.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
@@ -152,6 +186,11 @@ function runAcSign(){
 }
 
 function run225(){
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
     let workCode = fs.readFileSync("./work/ali225.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
@@ -159,20 +198,37 @@ function run225(){
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
+// 没初始化应该, 跟浏览器跑出来的调用不一样。。。
+function run140(){
+    const sandbox = {
+        wanfeng: wanfeng,
+        globalMy: globalMy,
+        console: console,
+    }
+    let workCode = fs.readFileSync("./work/ali140.js");
+    a = +new Date;
+    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
+    vm.runInNewContext(code, sandbox);
+    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
+}
 // runRsVmp();
 // runBoss();
-runZhihu();
+// runZhihu();
 // runX81();
 // runAcSign();
 // run225();
+run140();
 
 //// vm2
-// var vm = new VM({ sandbox: sandbox });
-// var script = new VMScript("debugger;\r\n" + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode, './zcj.js');
+// const sandbox = {
+//     wanfeng: wanfeng,
+//     globalMy: globalMy,
+//     console: console,
+// }
+// var vm2 = new VM({ sandbox: sandbox });
+// let workCode = fs.readFileSync("./work/rsvmp.js");
+// var script = new VMScript("debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode, './zcj.js');
 // console.log("jsdom初始化 + new VMScript 耗时:", +new Date - a, "毫秒");
 // a = +new Date;
-// vm.run(script);
+// vm2.run(script);
 // console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
-
-// nd=n/mN+YtqaUL4TRuNwoS9yiscgDyfny5/lA2wDB7Rj1rF8n/GbBF/V9Dh0wedv
-// nd=n/mN+YtqaUL4TRuNwoS9yiscgDyfny5/lA2wDB7Rj1rF8n/GbBF/V9Dh0wedv

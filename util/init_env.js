@@ -36,6 +36,7 @@ globalMy.initEnv = function () {
         // 自定义的构造函数 比如Document. 这里只是随便生成了一个函数
         if (!(i in globalMy)) {
             if (err.length == 2) {
+                // 如果new 传参少于某长度就会报错.
                 var less_code = globalMy.arg_less_code.replace('replace', i).replace("1", err[1].toString());
                 var len = err[1];
                 globalMy[i] = function () {
@@ -46,15 +47,18 @@ globalMy.initEnv = function () {
                 };
             }
             else {
+                // 说明可以直接new
                 globalMy[i] = function () {
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag]);
                 };
             }
         }
         var data = [globalMy[i]];
-        // 添加报错信息
+        // 传入报错信息， 底层生成一个构造函数, 套壳
         if (err.length != 0) {
+            // 如果是常规报错走这里, 否则就是特殊报错
             if (err[0] == i) {
+                // 非构造函数调用会报错
                 data.push(globalMy.err_code.replace("replace", err[0]));
             } else data.push(err[0]);
         }
@@ -63,22 +67,19 @@ globalMy.initEnv = function () {
     }
 
     Utils.initEnv();
-    // Utils.register();
 }
-
-
 globalMy.initEnv.apply(this, []);
 
 globalMy.console.log("node环境框架初始化耗时:", +new Date - cost_time, "毫秒");
 
 cost_time = +new Date;
 
-// 创建一份window对象
-globalMy.newWindow = function (dom_window, is_init) {
+// 初始化window对象赋值
+globalMy.initWindow = function (dom_window, is_init) {
     if (!is_init) {
         // 本来要new一份 iframe标签的window, 现在换一种思路了. 直接new一份vm环境, 导出里面初始化好的this当做contentWindow
-        var window_name = globalMy.setfoundName(Utils.newWindow());
-        globalMy.jsdom_element[window_name] = dom_window;
+        // var window_name = globalMy.setfoundName(Utils.newWindow());
+        // globalMy.jsdom_element[window_name] = dom_window;
     } else {
         var window_name = globalMy.setfoundName(this);
         globalMy.jsdom_element[window_name] = dom_window;
@@ -6380,5 +6381,5 @@ globalMy.location_reload = function (val) {
 }
 
 // 初始化window
-globalMy.newWindow.apply(this, [globalMy.dom_window, true]);
+globalMy.initWindow.apply(this, [globalMy.dom_window, true]);
 

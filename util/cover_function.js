@@ -432,7 +432,7 @@ globalMy.EventTarget_dispatchEvent = function () {
         stack[i].call(this, event);
     }
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了EventTarget_dispatchEvent, arguments => ', arguments, '  result => ', '' + result);
+        globalMy.console.log('[*]  调用了EventTarget_dispatchEvent, arguments => ', arguments);
     }
     return result;
 };
@@ -2434,7 +2434,8 @@ globalMy.HTMLIFrameElement_get_contentWindow = function () {
     var foundName = globalMy.foundName(this);
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
-        result = globalMy.newWindow(result, false);
+        // result = globalMy.newWindow(result, false);
+
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLIFrameElement_get_contentWindow, result => ', '' + result);
@@ -2821,6 +2822,38 @@ globalMy.BaseAudioContext_createDynamicsCompressor = function () {
     globalMy.value[obj_name]['maxValue'] = 0;
     if (globalMy.is_log) {
         console.log('[*]  调用了BaseAudioContext_createDynamicsCompressor, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
+    }
+    return result;
+};
+globalMy.BaseAudioContext_createAnalyser = function () {
+    if (!(this instanceof BaseAudioContext)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result = {};
+    //这里写方法实体
+    var name = globalMy.setfoundName(result);
+    Object.setPrototypeOf(globalMy.element[name], AnalyserNode.prototype);
+    globalMy.value[name] = {"fftSize":2048,"frequencyBinCount":1024,"minDecibels":-100,"maxDecibels":-30,"smoothingTimeConstant":0.8,"context":this,"numberOfInputs":1,"numberOfOutputs":1,"channelCount":2,"channelCountMode":"max","channelInterpretation":"speakers"};
+
+    if (globalMy.is_log) {
+        console.log('[*]  调用了BaseAudioContext_createAnalyser, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
+    }
+    return result;
+};
+globalMy.BaseAudioContext_createGain = function () {
+    if (!(this instanceof BaseAudioContext)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result = {};
+    //这里写方法实体
+    var name = globalMy.setfoundName(result);
+    Object.setPrototypeOf(globalMy.element[name], GainNode.prototype);
+    globalMy.value[name] = {"gain":{},"context":this,"numberOfInputs":1,"numberOfOutputs":1,"channelCount":2,"channelCountMode":"max","channelInterpretation":"speakers"}
+    Object.setPrototypeOf(globalMy.value[name].gain, AudioParam.prototype);
+    name = globalMy.setfoundName(globalMy.value[name].gain);
+    globalMy.value[name] = {"value":1,"automationRate":"a-rate","defaultValue":1,"minValue":-3.4028234663852886e+38,"maxValue":3.4028234663852886e+38}
+    if (globalMy.is_log) {
+        console.log('[*]  调用了BaseAudioContext_createGain, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
     }
     return result;
 };
