@@ -28,4 +28,4 @@ globalMy.is_log = true;
 // js开始运行时的时间戳, 用来计算整个js耗时
 globalMy.memory.end_time = globalMy.memory.begin_time = Date.now();
 debugger;
-// Math.random = function(){ return 0.5 }
+

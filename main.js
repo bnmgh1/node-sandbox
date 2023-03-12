@@ -1,5 +1,5 @@
 var a = +new Date;
-// const { VM, VMScript } = require('cyvm2');
+const { VM, VMScript } = require('cyvm2');
 // const {VM, VMScript} = require('vm2');
 const fs = require("fs");
 const vm = require("vm");
@@ -25,9 +25,10 @@ let configure = {
     // url:"https://pastebin.com/login",
     // url: "http://epub.cnipa.gov.cn/SW/",
     // url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
+    url: 'https://www.zhihu.com/search?q=%E7%BE%8E%E5%9B%BD%E7%A1%85%E8%B0%B7%E9%93%B6%E8%A1%8C%E7%A0%B4%E4%BA%A7%E5%85%B3%E9%97%AD&utm_content=search_hot&type=content',
     // url: 'https://www.zhipin.com/web/geek/job?query=%E7%88%AC%E8%99%AB&city=101190100&page=2',
     // url: 'https://www.toutiao.com/',
-    url: 'https://login.taobao.com/member/login.jhtml?spm=a21bo.jianhua.754894437.1.5af911d9ha3rTs&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F',
+    // url: 'https://login.taobao.com/member/login.jhtml?spm=a21bo.jianhua.754894437.1.5af911d9ha3rTs&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F',
 }
 const dom = new JSDOM(html, configure);
 
@@ -120,17 +121,21 @@ function runZhihu() {
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
     vm.runInNewContext(code, sandbox);
-    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
-    const WebSocket = require('ws');
-    var wss = new WebSocket.Server({port: 8181});
-    wss.on('connection', function (ws) {
-        console.log('client connected');
 
-        ws.on('message', function (data, isBinary) {
-            console.log('Message from client ', isBinary ? data : data.toString());
-            ws.send("2.0_" + sandbox.D(data.toString()));
-        });
-    });
+    // var vm = new VM({ sandbox: sandbox });
+    // var script =  new VMScript(code, "./zcj.js");
+    // vm.run(script);
+    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
+    // const WebSocket = require('ws');
+    // var wss = new WebSocket.Server({port: 8181});
+    // wss.on('connection', function (ws) {
+    //     console.log('client connected');
+
+    //     ws.on('message', function (data, isBinary) {
+    //         console.log('Message from client ', isBinary ? data : data.toString());
+    //         ws.send("2.0_" + sandbox.D(data.toString()));
+    //     });
+    // });
 }
 
 // 知乎 x81 没仔细扣,不一定能用
@@ -138,7 +143,7 @@ function runX81() {
     let workCode = fs.readFileSync("./work/zhihu/x81.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
-    vm.runInNewContext(code, sandbox);
+    // vm.runInNewContext(code, sandbox);
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
@@ -161,10 +166,10 @@ function run225(){
 
 // runRsVmp();
 // runBoss();
-// runZhihu();
+runZhihu();
 // runX81();
 // runAcSign();
-run225();
+// run225();
 
 //// vm2
 // var vm = new VM({ sandbox: sandbox });
@@ -173,3 +178,6 @@ run225();
 // a = +new Date;
 // vm.run(script);
 // console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
+
+// nd=n/mN+YtqaUL4TRuNwoS9yiscgDyfny5/lA2wDB7Rj1rF8n/GbBF/V9Dh0wedv
+// nd=n/mN+YtqaUL4TRuNwoS9yiscgDyfny5/lA2wDB7Rj1rF8n/GbBF/V9Dh0wedv

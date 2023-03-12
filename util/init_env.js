@@ -1,6 +1,7 @@
 
 Utils.Error_get_stack = function () {
     debugger;
+    // var stack = arguments[0];
     var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
     for (var i = 0; i < stack.length; i++) {
         if (stack[i].indexOf(`at globalMy.`) != -1){
@@ -16,7 +17,7 @@ Utils.Error_get_stack = function () {
         }
     }
     stack = stack.join('\n');
-    // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
+    // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
     console.log("报错堆栈 -> ", stack);
     return stack;
 }
@@ -30,8 +31,8 @@ globalMy.initEnv = function () {
         if (i in this) {
             delete this[i];
         }
-        var err = globalMy.throw_err[i];
 
+        var err = globalMy.throw_err[i];
         // 自定义的构造函数 比如Document. 这里只是随便生成了一个函数
         if (!(i in globalMy)) {
             if (err.length == 2) {
@@ -60,11 +61,12 @@ globalMy.initEnv = function () {
         wanfeng[i] = wanfeng.SetNative(data, i);
         Object.setPrototypeOf(wanfeng[i], Function.prototype);
     }
-    // 初始化global, 然后设置__proto__链
 
     Utils.initEnv();
-    Utils.register();
+    // Utils.register();
 }
+
+
 globalMy.initEnv.apply(this, []);
 
 globalMy.console.log("node环境框架初始化耗时:", +new Date - cost_time, "毫秒");

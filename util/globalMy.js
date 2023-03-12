@@ -251,7 +251,6 @@ globalMy.createEvent = function createEvent(type) {
         var html_element = document.documentElement;
         globalMy.event_value[name]["target"] = html_element;
         globalMy.event_value[name]["srcElement"] = html_element;
-        globalMy.event_value[name]["path"] = [html_element, document, window];
         globalMy.event_value[name]["clientX"] = globalMy.getRandomNum(500, 1700)
         globalMy.event_value[name]["clientY"] = globalMy.getRandomNum(200, 500)
         globalMy.event_value[name]["screenX"] = globalMy.event_value[name]["clientX"]
@@ -374,43 +373,45 @@ globalMy.callInterval = function callInterval() {
 }
 // 鼠标事件
 globalMy.callMouseEvent = function callMouseEvent(){
-    var event = globalMy.createEvent("mouseenter")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // 一般是由document触发, 具体看网页事件绑定的是window还是document对象
+    
+    // var event = globalMy.createEvent("mouseenter")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    globalMy.createEvent("mousedown")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseenter")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    event = globalMy.createEvent("mouseenter")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseenter")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    event = globalMy.createEvent("mouseenter")
+    var event = globalMy.createEvent("mousedown")
     event.isTrusted = true
-    window.dispatchEvent(event);
+    document.dispatchEvent(event);
 
     for (var i = 0; i < 50; i++) {
         event = globalMy.createEvent("mousemove")
         event.isTrusted = true
-        window.dispatchEvent(event)
+        document.dispatchEvent(event)
     }
 
-    event = globalMy.createEvent("mouseleave")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseleave")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    event = globalMy.createEvent("mouseleave")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseleave")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    event = globalMy.createEvent("mouseleave")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseleave")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 
-    event = globalMy.createEvent("mouseup")
-    event.isTrusted = true
-    window.dispatchEvent(event);
+    // event = globalMy.createEvent("mouseup")
+    // event.isTrusted = true
+    // document.dispatchEvent(event);
 }
 
 
