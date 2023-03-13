@@ -386,6 +386,9 @@ globalMy.WebGLRenderingContext_getContextAttributes = function () {
 
 // Navigator
 globalMy.Navigator_getBattery = function () {
+    if (!(this instanceof Navigator)) {
+        throw new TypeError("Illegal invocation");
+    }
     //这里写方法实体
     delete Navigator.prototype.getBattery;
     let result = new Promise((resolve, reject) => {
@@ -406,6 +409,9 @@ globalMy.Navigator_getBattery = function () {
 
 // EventTarget
 globalMy.EventTarget_addEventListener = function () {
+    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+        throw new TypeError("Illegal invocation");
+    }
     var result;
     let type = arguments[0];
     let callback = arguments[1];
@@ -415,11 +421,14 @@ globalMy.EventTarget_addEventListener = function () {
     }
     globalMy.memory.listeners[type].push(callback);
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了EventTarget_addEventListener, arguments => ', arguments, '  result => ', '' + result);
+        globalMy.console.log('[*]  调用了EventTarget_addEventListener, arguments => ', arguments, ", 调用者 ->", this + '', '  result => ', '' + result);
     }
     return result;
 };
 globalMy.EventTarget_dispatchEvent = function () {
+    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+        throw new TypeError("Illegal invocation");
+    }
     var result;
     //这里写方法实体
     let event = arguments[0];
@@ -437,6 +446,9 @@ globalMy.EventTarget_dispatchEvent = function () {
     return result;
 };
 globalMy.EventTarget_removeEventListener = function () {
+    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+        throw new TypeError("Illegal invocation");
+    }
     var result;
     let type = arguments[0];
     let callback = arguments[1];
@@ -1419,8 +1431,16 @@ globalMy.Document_createEvent = function (type) {
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_createEvent, arguments => ', arguments);
     }
-    if (type === "TouchEvent") {
-        globalMy.throw_error("DOMException", "Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid." + "at snippet:///%E8%84%9A%E6%9C%AC%E4%BB%A3%E7%A0%81%E6%AE%B5%20%2332:2:6");
+    switch (type) {
+        case "TouchEvent":
+            globalMy.throw_error("DOMException", "Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.");
+            break
+        case "CustomEvent":
+            result = globalMy.createEvent("CustomEvent");
+            break
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_createEvent, result => ', result + '');
     }
     return result;
 };
@@ -1965,6 +1985,8 @@ globalMy.Document_get_currentScript = function () {
     var this_ = globalMy.jsdom_element[name];
     result = this_.currentScript;
     if (result == undefined || result == null) {
+        result = globalMy.value[name].currentScript;
+        if (!result) result = null;
     } else {
         var name = globalMy.foundJsdomName(result);
         result = globalMy.element[name];
@@ -2637,11 +2659,11 @@ globalMy.Performance_getEntries = function () {
     result[9] = {};
     Object.setPrototypeOf(result[9], PerformancePaintTiming.prototype);
     name = globalMy.setfoundName(result[9]);
-    globalMy.value[name] = {"name": "first-paint", "entryType": "paint", "startTime": 84.60000000149012, "duration": 0};
+    globalMy.value[name] = { "name": "first-paint", "entryType": "paint", "startTime": 84.60000000149012, "duration": 0 };
     result[10] = {};
     Object.setPrototypeOf(result[10], PerformancePaintTiming.prototype);
     name = globalMy.setfoundName(result[10]);
-    globalMy.value[name] = {"name": "first-contentful-paint", "entryType": "paint", "startTime": 91.5, "duration": 0};
+    globalMy.value[name] = { "name": "first-contentful-paint", "entryType": "paint", "startTime": 91.5, "duration": 0 };
     result[11] = {};
     Object.setPrototypeOf(result[11], PerformanceMark.prototype);
     name = globalMy.setfoundName(result[11]);
@@ -2833,7 +2855,19 @@ globalMy.BaseAudioContext_createAnalyser = function () {
     //这里写方法实体
     var name = globalMy.setfoundName(result);
     Object.setPrototypeOf(globalMy.element[name], AnalyserNode.prototype);
-    globalMy.value[name] = {"fftSize":2048,"frequencyBinCount":1024,"minDecibels":-100,"maxDecibels":-30,"smoothingTimeConstant":0.8,"context":this,"numberOfInputs":1,"numberOfOutputs":1,"channelCount":2,"channelCountMode":"max","channelInterpretation":"speakers"};
+    globalMy.value[name] = {
+        "fftSize": 2048,
+        "frequencyBinCount": 1024,
+        "minDecibels": -100,
+        "maxDecibels": -30,
+        "smoothingTimeConstant": 0.8,
+        "context": this,
+        "numberOfInputs": 1,
+        "numberOfOutputs": 1,
+        "channelCount": 2,
+        "channelCountMode": "max",
+        "channelInterpretation": "speakers"
+    };
 
     if (globalMy.is_log) {
         console.log('[*]  调用了BaseAudioContext_createAnalyser, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
@@ -2848,10 +2882,24 @@ globalMy.BaseAudioContext_createGain = function () {
     //这里写方法实体
     var name = globalMy.setfoundName(result);
     Object.setPrototypeOf(globalMy.element[name], GainNode.prototype);
-    globalMy.value[name] = {"gain":{},"context":this,"numberOfInputs":1,"numberOfOutputs":1,"channelCount":2,"channelCountMode":"max","channelInterpretation":"speakers"}
+    globalMy.value[name] = {
+        "gain": {},
+        "context": this,
+        "numberOfInputs": 1,
+        "numberOfOutputs": 1,
+        "channelCount": 2,
+        "channelCountMode": "max",
+        "channelInterpretation": "speakers"
+    }
     Object.setPrototypeOf(globalMy.value[name].gain, AudioParam.prototype);
     name = globalMy.setfoundName(globalMy.value[name].gain);
-    globalMy.value[name] = {"value":1,"automationRate":"a-rate","defaultValue":1,"minValue":-3.4028234663852886e+38,"maxValue":3.4028234663852886e+38}
+    globalMy.value[name] = {
+        "value": 1,
+        "automationRate": "a-rate",
+        "defaultValue": 1,
+        "minValue": -3.4028234663852886e+38,
+        "maxValue": 3.4028234663852886e+38
+    }
     if (globalMy.is_log) {
         console.log('[*]  调用了BaseAudioContext_createGain, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
     }
