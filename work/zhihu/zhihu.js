@@ -1019,4 +1019,4 @@ var D = function(t) {
 };
 // udid "101_3_3.0+/udid"
 // console.log("2.0_"+D("7d231a16e30ee2a3512cdf7a30f05226"));
-// console.log("2.0_"+D("a9724ba4c877bddbdeee40e878980ae0"));
+console.log("2.0_"+D("a9724ba4c877bddbdeee40e878980ae0"));

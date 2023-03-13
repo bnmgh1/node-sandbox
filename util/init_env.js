@@ -1,24 +1,24 @@
 
 Utils.Error_get_stack = function () {
     debugger;
-    // var stack = arguments[0];
-    var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
-    for (var i = 0; i < stack.length; i++) {
-        if (stack[i].indexOf(`at globalMy.`) != -1){
-            stack.splice(i, 1);
-        }
-        if (stack[i].indexOf(`at Module._compile (node:`) != -1) {
-            stack = stack.slice(0, i);
-            break;
-        }
-        if (stack[i].indexOf(`at Script.runInContext`) != -1){
-            stack = stack.slice(0, i);
-            break;
-        }
-    }
-    stack = stack.join('\n');
-    // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
-    console.log("报错堆栈 -> ", stack);
+    var stack = arguments[0];
+    // var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
+    // for (var i = 0; i < stack.length; i++) {
+    //     if (stack[i].indexOf(`at globalMy.`) != -1){
+    //         stack.splice(i, 1);
+    //     }
+    //     if (stack[i].indexOf(`at Module._compile (node:`) != -1) {
+    //         stack = stack.slice(0, i);
+    //         break;
+    //     }
+    //     if (stack[i].indexOf(`at Script.runInContext`) != -1){
+    //         stack = stack.slice(0, i);
+    //         break;
+    //     }
+    // }
+    // stack = stack.join('\n');
+    // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
+    // console.log("报错堆栈 -> ", stack);
     return stack;
 }
 
@@ -67,6 +67,8 @@ globalMy.initEnv = function () {
     }
 
     Utils.initEnv();
+    Utils.register();
+
 }
 globalMy.initEnv.apply(this, []);
 
@@ -101,6 +103,16 @@ globalMy.initWindow = function (dom_window, is_init) {
 
     globalMy.value[window_name].location = Utils.newLocation();
     globalMy.value[window_name].document = Utils.newDocument();
+
+    var console_name = globalMy.setfoundName(console);
+    globalMy.value[console_name].memory = {};
+    Object.setPrototypeOf(globalMy.value[console_name].memory, Utils.MemoryInfo_prototype);
+    globalMy.obj_name = globalMy.setfoundName(globalMy.value[console_name].memory);
+    globalMy.value[globalMy.obj_name] = {
+        jsHeapSizeLimit: 3760000000,
+        totalJSHeapSize: 13400000,
+        usedJSHeapSize: 11900000,
+    }
 
     var document_name = globalMy.setfoundName(globalMy.value[window_name].document);
     globalMy.value[document_name].location = globalMy.value[window_name].location;
@@ -743,11 +755,22 @@ globalMy.document_set_location = function () {
 }
 
 globalMy.console_get_memory = function () {
-    return {};
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['memory'];
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了window_get_self,result => ', '' + result)
+    }
+    return result;
 }
-globalMy.console_set_memory = function () {
-    return;
-} // 没补这个对象
+globalMy.console_set_memory = function (val) {
+    var result;
+    var foundName = globalMy.foundName(this);
+    globalMy.value[foundName]['memory'] = val;
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了window_get_screenY, 传参val => ' + val + '  result => ', '' + result)
+    }
+}
 
 
 // window下的方法
