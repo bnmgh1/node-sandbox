@@ -5,7 +5,9 @@ globalMy.CustomEvent_get_detail = function () {
     let result;
     var foundName = globalMy.foundEventName(this);
     result = globalMy.event_value[foundName]['detail'];
-    if (globalMy.is_log) { console.log('[*]  调用了CustomEvent_get_detail,result => ', result) }
+    if (globalMy.is_log) {
+        console.log('[*]  调用了CustomEvent_get_detail,result => ', result)
+    }
     return result;
 }
 globalMy.CustomEvent_initCustomEvent = function () {
@@ -15,6 +17,8 @@ globalMy.CustomEvent_initCustomEvent = function () {
     let result;
     var foundName = globalMy.foundEventName(this);
     //这里写方法实体
-    if (globalMy.is_log) { console.log('[*]  调用了CustomEvent_initCustomEvent, arguments => ' + JSON.stringify(arguments) + '  result => ', result) }
+    if (globalMy.is_log) {
+        console.log('[*]  调用了CustomEvent_initCustomEvent, arguments => ', arguments, '  result => ', result)
+    }
     return result;
 }

@@ -1,4 +1,3 @@
-
 globalMy.AnalyserNode_get_fftSize = function () {
     if (!(this instanceof AnalyserNode)) {
         throw new TypeError("Illegal invocation");
@@ -147,3 +146,4 @@ globalMy.AnalyserNode_getFloatTimeDomainData = function () {
     }
     return result;
 }
+

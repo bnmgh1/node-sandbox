@@ -1,4 +1,5 @@
-// 函数实现,对dump下来的函数进行覆盖
+// 函数实现, 对dump下来的函数进行覆盖. 怕到时候框架固定的写法会变, 所以实现的方法单独放在这个js里. 到时候好实现迁移
+
 
 // IDBRequest
 globalMy.IDBRequest_get_result = function () {
@@ -421,7 +422,7 @@ globalMy.EventTarget_addEventListener = function () {
     }
     globalMy.memory.listeners[type].push(callback);
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了EventTarget_addEventListener, arguments => ', arguments, ", 调用者 ->", this + '', '  result => ', '' + result);
+        globalMy.console.log('[*]  调用了EventTarget_addEventListener, arguments => ', arguments, ", 调用者 ->", this + '');
     }
     return result;
 };
@@ -429,19 +430,24 @@ globalMy.EventTarget_dispatchEvent = function () {
     if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
         throw new TypeError("Illegal invocation");
     }
-    var result;
+    var result = true;
     //这里写方法实体
     let event = arguments[0];
-    if (!(event.type in globalMy.memory.listeners)) {
-        return;
-    }
-    var stack = globalMy.memory.listeners[event.type];
-    // event.target = this;
-    for (var i = 0, l = stack.length; i < l; i++) {
-        stack[i].call(this, event);
-    }
+    let type = event.type;
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了EventTarget_dispatchEvent, arguments => ', arguments);
+        globalMy.console.log('[*]  调用了EventTarget_dispatchEvent, arguments => ', arguments, ", type =>", type);
+    }
+    if (!(type in globalMy.memory.listeners)) {
+
+    } else {
+        var stack = globalMy.memory.listeners[type];
+        for (var i = 0, l = stack.length; i < l; i++) {
+            stack[i].call(this, event);
+        }
+    }
+
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了EventTarget_dispatchEvent, result => ', result);
     }
     return result;
 };
@@ -497,7 +503,10 @@ globalMy.HTMLCanvasElement_getContext = function (tag_name) {
         globalMy.jsdom_element[name] = result;
         Object.setPrototypeOf(globalMy.element[name], CanvasRenderingContext2D.prototype);
         result = globalMy.element[name];
-    } else {
+    }else if (tag_name == "webgl2"){
+
+    }
+    else {
         debugger;
     }
     if (globalMy.is_log) {
@@ -567,6 +576,73 @@ globalMy.CanvasRenderingContext2D_createRadialGradient = function () {
         globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createRadialGradient ' + '  result => ', '' + result);
     }
     return result;
+};
+globalMy.CanvasRenderingContext2D_measureText = function () {
+    if (!(this instanceof CanvasRenderingContext2D)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_measureText, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    result = this_.measureText.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        var textMetrics = {};
+        Object.setPrototypeOf(textMetrics, TextMetrics.prototype);
+        var result_name = globalMy.setfoundName(textMetrics);
+        for(var i in result){
+            globalMy.value[result_name][i] = result[i];
+        }
+        result = textMetrics;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_measureText ' + '  result => ', '' + result);
+    }
+    return result;
+};
+globalMy.CanvasRenderingContext2D_createLinearGradient = function () {
+  if (!(this instanceof CanvasRenderingContext2D)) {
+    throw new TypeError("Illegal invocation");
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient, arguments => ', arguments);
+  }
+  var result;
+  //这里写方法实体
+  var name = globalMy.foundName(this);
+  var this_ = globalMy.jsdom_element[name];
+  result = this_.createLinearGradient.apply(this_, arguments);
+  if (result == undefined || result == null) {} else {
+      var result_name = globalMy.foundJsdomName(result, "CanvasGradient");
+      result = globalMy.element[result_name];
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient ' + '  result => ', '' + result);
+  }
+  return result;
+};
+globalMy.CanvasRenderingContext2D_set_strokeStyle = function (val) {
+  if (!(this instanceof CanvasRenderingContext2D)) {
+    throw new TypeError("Illegal invocation");
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle, 传参val => ' + val);
+  }
+  var result;
+  var foundName = globalMy.foundName(this);
+  if (val == undefined || val == null) {
+    globalMy.jsdom_element[foundName]['strokeStyle'] = val;
+  } else {
+      var name = globalMy.foundName(val);
+      globalMy.jsdom_element[foundName]['strokeStyle'] = globalMy.jsdom_element[name];
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle' + '  result => ', '' + result);
+  }
 };
 
 // CharacterData 感觉有问题
@@ -1433,10 +1509,13 @@ globalMy.Document_createEvent = function (type) {
     }
     switch (type) {
         case "TouchEvent":
-            globalMy.throw_error("DOMException", "Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.");
+            globalMy.call_error("Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.", "Error: ");
             break
         case "CustomEvent":
-            result = globalMy.createEvent("CustomEvent");
+            result = globalMy.createEvent(type);
+            break
+        case "UIEvent":
+            result = globalMy.createEvent(type);
             break
     }
     if (globalMy.is_log) {
@@ -2167,6 +2246,51 @@ globalMy.Document_get_wasDiscarded = function () {
     }
     return result;
 };
+globalMy.Document_get_readyState = function () {
+    if (!(this instanceof Document)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_readyState');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['readyState'];
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_readyState, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.Document_querySelectorAll = function () {
+    if (!(this instanceof Document)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_querySelectorAll, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    result = this_.querySelectorAll.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        var length = result.length;
+        var nodeList = {};
+        Object.setPrototypeOf(nodeList, NodeList.prototype);
+        var result_name = globalMy.setfoundName(nodeList);
+        globalMy.value[result_name].length = length;
+        for (var i = 0; i < length; i++) {
+            name = globalMy.foundJsdomName(result[i]);
+            nodeList[i] = globalMy.element[name];
+        }
+        result = nodeList;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_querySelectorAll ' + '  result => ', '' + result);
+    }
+    return result;
+};
 
 // MutationRecord
 globalMy.MutationRecord_get_addedNodes = function () {
@@ -2338,8 +2462,12 @@ globalMy.HTMLMediaElement_canPlayType = function () {
     }
     var result;
     //这里写方法实体
-    var probably = ['video/ogg; codecs="theora"', 'video/mp4; codecs="avc1.42E01E"', 'video/webm; codecs="vp8, vorbis"', 'audio/ogg; codecs="vorbis"', 'audio/wav; codecs="1"', "audio/mpeg;"];
-    var maybe = ['audio/x-m4a;audio/aac;'];
+    var probably = ['audio/flac', 'audio/mpeg; codecs="mp3"', 'video/mp4; codecs="avc1.42E034"', 'video/mp4; codecs="avc1.42F01E"', 'video/mp4; codecs="avc1.4D001E"',
+        'video/mp4; codecs="avc3.42001E"', 'video/mp4; codecs="avc3.42E01E, mp4a.40.29"', 'video/mp4; codecs="flac"', 'video/mp4; codecs="mp4a.40.02"',
+        'video/mp4; codecs="mp4a.40.5"', 'video/mp4; codecs="mp4a.67"', 'video/mp4; codecs="opus"', 'video/ogg; codecs="flac"', 'video/ogg; codecs="opus"',
+        'video/ogg; codecs="vp8"', 'video/webm; codecs="av01.0.04M.08"', 'video/webm; codecs="vp09.02.10.08"',
+        'video/ogg; codecs="theora"', 'video/mp4; codecs="avc1.42E01E"', 'video/webm; codecs="vp8, vorbis"', 'audio/ogg; codecs="vorbis"', 'audio/wav; codecs="1"', "audio/mpeg;"];
+    var maybe = ['video/mp4; codecs="avc1.42E009"', 'audio/x-m4a;audio/aac;', 'video/webm', 'video/x-m4v; codecs="avc1.42AC23"',];
     if (probably.indexOf(arguments[0]) > -1) {
         result = "probably";
     } else if (maybe.indexOf(arguments[0]) > -1) {
@@ -2659,11 +2787,11 @@ globalMy.Performance_getEntries = function () {
     result[9] = {};
     Object.setPrototypeOf(result[9], PerformancePaintTiming.prototype);
     name = globalMy.setfoundName(result[9]);
-    globalMy.value[name] = { "name": "first-paint", "entryType": "paint", "startTime": 84.60000000149012, "duration": 0 };
+    globalMy.value[name] = {"name": "first-paint", "entryType": "paint", "startTime": 84.60000000149012, "duration": 0};
     result[10] = {};
     Object.setPrototypeOf(result[10], PerformancePaintTiming.prototype);
     name = globalMy.setfoundName(result[10]);
-    globalMy.value[name] = { "name": "first-contentful-paint", "entryType": "paint", "startTime": 91.5, "duration": 0 };
+    globalMy.value[name] = {"name": "first-contentful-paint", "entryType": "paint", "startTime": 91.5, "duration": 0};
     result[11] = {};
     Object.setPrototypeOf(result[11], PerformanceMark.prototype);
     name = globalMy.setfoundName(result[11]);
@@ -2746,6 +2874,7 @@ globalMy.Performance_getEntriesByType = function () {
     }
     return result;
 };
+
 // AudioParam
 globalMy.AudioParam_setValueAtTime = function () {
     let result;
@@ -3011,11 +3140,97 @@ globalMy.AudioDestinationNode_get_maxChannelCount = function () {
     return result;
 };
 
+// CustomEvent
+globalMy.CustomEvent_initCustomEvent = function () {
+    if (!(this instanceof CustomEvent)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result;
+    var type = arguments[0];
+    if (typeof type !== "string") {
+        debugger;
+    }
+    var foundName = globalMy.foundEventName(this);
+    globalMy.event_value[foundName].type = type;
+    if (arguments[3] && typeof arguments[3] == 'object') {
+        globalMy.event_value[foundName].detail = arguments[3];
+    }
+    //这里写方法实体
+    if (globalMy.is_log) {
+        console.log('[*]  调用了CustomEvent_initCustomEvent, arguments => ', arguments, '  result => ', result)
+    }
+    return result;
+}
+
+// Crypto
+globalMy.Crypto_getRandomValues = function (array32, ...args) {
+    if (!(this instanceof Crypto)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result = array32;
+    //这里写方法实体
+    if (globalMy.is_log) {
+        console.log('[*]  调用了Crypto_getRandomValues, arguments => ', JSON.stringify(arguments), '  result => ', result)
+    }
+    return result;
+}
+
+// OffscreenCanvas
+globalMy.OffscreenCanvas_getContext = function (type) {
+    if (!(this instanceof OffscreenCanvas)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result;
+    switch (type) {
+        case "2d":
+            result = {};
+            Object.setPrototypeOf(result, OffscreenCanvasRenderingContext2D.prototype);
+            var name = globalMy.setfoundName(result);
+            globalMy.value[name] = {
+                "canvas": this,
+                "globalAlpha": 1,
+                "globalCompositeOperation": "source-over",
+                "filter": "none",
+                "imageSmoothingEnabled": true,
+                "imageSmoothingQuality": "low",
+                "strokeStyle": "#000000",
+                "fillStyle": "#000000",
+                "shadowOffsetX": 0,
+                "shadowOffsetY": 0,
+                "shadowBlur": 0,
+                "shadowColor": "rgba(0, 0, 0, 0)",
+                "lineWidth": 1,
+                "lineCap": "butt",
+                "lineJoin": "miter",
+                "miterLimit": 10,
+                "lineDashOffset": 0,
+                "font": "10px sans-serif",
+                "textAlign": "start",
+                "textBaseline": "alphabetic",
+                "direction": "ltr",
+                "fontKerning": "auto",
+                "fontStretch": "normal",
+                "fontVariantCaps": "normal",
+                "letterSpacing": "0px",
+                "textRendering": "auto",
+                "wordSpacing": "0px"
+            }
+            break
+    }
+    //这里写方法实体
+    if (globalMy.is_log) {
+        console.log('[*]  调用了OffscreenCanvas_getContext, arguments => ', JSON.stringify(arguments), '  result => ', result)
+    }
+    return result;
+}
+
+globalMy.matchMedia_ = [];
 // window function
 globalMy.window_matchMedia = function () {
-    var result;
-    var name = globalMy.setfoundName({});
-    Object.setPrototypeOf(globalMy.element[name], MediaQueryList.prototype);
+    var result = {};
+    var name = globalMy.setfoundName(result);
+    Object.setPrototypeOf(result, MediaQueryList.prototype);
+    globalMy.matchMedia_.push(arguments[0]);
     var true_track = ['(any-pointer: fine )', '(any-pointer )', '(any-hover: hover )', '(any-hover )', '(color-gamut: srgb )', '(color-gamut )'];
     globalMy.value[name] = {
         matches: false,
@@ -3025,7 +3240,6 @@ globalMy.window_matchMedia = function () {
     if (true_track.indexOf(arguments[0]) > -1) {
         globalMy.value[name].matches = true;
     }
-    result = globalMy.element[name];
     if (globalMy.is_log) {
         globalMy.console.log("[*]  调用了matchMedia方法, arguments ->", arguments, " result ->", '' + result);
     }
@@ -3061,5 +3275,35 @@ globalMy.window_openDatabase = function () {
     }
     return result;
 };
+globalMy.window_structuredClone = function (obj) {
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  调用了window_structuredClone方法 arguments -> ", arguments,);
+    }
+    var result;
+    if (obj == undefined || obj == null) {
+        result = obj;
+    } else if (Array.isArray(obj)) {
+        result = obj.map((item) => item);
+    } else if (obj.__proto__ == Object.prototype) {
+        result = {}
+        globalMy.is_log = false;
+        for (var i in obj) {
+            result[i] = window.structuredClone(obj[i]);
+        }
+        globalMy.is_log = true;
+    } else {
+        var prototype_name = obj.__proto__[Symbol.toStringTag];
+        if (prototype_name in window) {
+            globalMy.call_error(`Failed to execute 'structuredClone' on 'Window': ${prototype_name} object could not be cloned.`
+                , "Error: ")
+        } else {
+            debugger;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  调用了webkitRequestFileSystem方法", " result ->", '' + result);
+    }
+    return result;
+}
 globalMy.window_btoa = globalMy.base64.base64encode;
 globalMy.window_atob = globalMy.base64.base64decode;

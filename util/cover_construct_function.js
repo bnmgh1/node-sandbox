@@ -154,10 +154,22 @@ globalMy.AudioContext = function AudioContext() {
     globalMy.value[obj_name]["maxChannelCount"] = 2;
     globalMy.value[obj_name]["numberOfInputs"] = 1;
     globalMy.value[obj_name]["numberOfOutputs"] = 0;
-
     return audioContext;
 }
 
+globalMy.OffscreenCanvas = function OffscreenCanvas(width, height){
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> OffscreenCanvas, ", "arguments => ", arguments)
+    }
+    var offscreenCanvas = this;
+    Object.setPrototypeOf(offscreenCanvas, OffscreenCanvas.prototype);
+    var name = globalMy.setfoundName(offscreenCanvas);
+    globalMy.value[name].width = width;
+    globalMy.value[name].height = height;
+    globalMy.value[name].oncontextlost = null;
+    globalMy.value[name].oncontextrestored = null;
+    return OffscreenCanvas;
+}
 
 /*
 自定义Promise函数模块：IIFE

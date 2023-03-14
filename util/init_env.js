@@ -1,6 +1,6 @@
 
 Utils.Error_get_stack = function () {
-    debugger;
+    // debugger;
     var stack = arguments[0];
     // var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
     // for (var i = 0; i < stack.length; i++) {
@@ -18,7 +18,7 @@ Utils.Error_get_stack = function () {
     // }
     // stack = stack.join('\n');
     // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
-    // console.log("报错堆栈 -> ", stack);
+    console.log("报错堆栈 -> ", stack);
     return stack;
 }
 
@@ -43,13 +43,13 @@ globalMy.initEnv = function () {
                     if (arguments.length < len) {
                         throw new TypeError(less_code);
                     }
-                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag]);
+                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
             }
             else {
                 // 说明可以直接new
                 globalMy[i] = function () {
-                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag]);
+                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
             }
         }
@@ -118,6 +118,7 @@ globalMy.initWindow = function (dom_window, is_init) {
     globalMy.value[document_name].location = globalMy.value[window_name].location;
     globalMy.jsdom_element[document_name] = dom_window.document;
     Object.setPrototypeOf(globalMy.element[document_name], HTMLDocument.prototype);
+    globalMy.value[document_name].readyState = "complete";
 
     // document.all
     globalMy.value[document_name].all = new wanfeng.xtd;
@@ -670,6 +671,8 @@ globalMy.initWindow = function (dom_window, is_init) {
     globalMy.value[window_name]['history'] = {};
     var history_name = globalMy.setfoundName(globalMy.value[window_name]['history']);
     Object.setPrototypeOf(globalMy.value[window_name]['history'], History.prototype);
+    globalMy.value[history_name].length = 1;
+
 
     // indexedDB
     globalMy.value[window_name]['indexedDB'] = {};
@@ -777,7 +780,7 @@ globalMy.console_set_memory = function (val) {
 globalMy.window_setTimeout = function setTimeout(func, delay, ...args) {
     if (globalMy.is_log) {
         globalMy.console.log("setTimeout func=>", func + '');
-        globalMy.console.log("setTimeout args=>", args);
+        // globalMy.console.log("setTimeout args=>", args);
     }
     globalMy.IntervalId += 1;
     globalMy.Id.push(globalMy.IntervalId);

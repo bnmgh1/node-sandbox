@@ -282,12 +282,20 @@ globalMy.createEvent = function createEvent(type) {
     else if (type === "deviceorientation") {
 
     }
-    else if (type == "CustomEvent") {
-        var name = globalMy.event.push({ "isTrusted": true, }) - 1;
+    else if (type === "CustomEvent") {
+        var name = globalMy.event.push({ "isTrusted": false, }) - 1;
         Object.setPrototypeOf(globalMy.event[name], CustomEvent.prototype);
         globalMy.event_value[name] = {
             "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
-            "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false, "NONE": 0, "CAPTURING_PHASE": 1, "AT_TARGET": 2, "BUBBLING_PHASE": 3
+            "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
+        }
+    }
+    else if (type === "UIEvent") {
+        var name = globalMy.event.push({ "isTrusted": false, }) - 1;
+        Object.setPrototypeOf(globalMy.event[name], UIEvent.prototype);
+        globalMy.event_value[name] = {
+            "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
+            "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
         }
     }
     else {
@@ -296,11 +304,12 @@ globalMy.createEvent = function createEvent(type) {
 
     return globalMy.event[name];
 }
+
 // 报错
-globalMy.throw_error = function error(x, y) {
+globalMy.call_error = function error(x, y) {
     let e = new TypeError();
     e.message = x;
-    e.stack = e.stack.replace("TypeError", y);
+    e.stack = e.stack.replace("TypeError: ", y + x);
     throw e;
 };
 
