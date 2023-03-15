@@ -601,9 +601,6 @@ globalMy.RTCPeerConnection_setLocalDescription = function () {
   var result;
   //这里写方法实体
   result = new Promise((resolve, reject) => {
-    if (arguments.length > 0) {
-      throw new TypeError(`Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The provided value is not of type 'RTCSessionDescriptionInit'.`);
-    }
     resolve();
   });
   if (globalMy.is_log) {

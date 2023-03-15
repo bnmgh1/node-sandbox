@@ -423,7 +423,7 @@ globalMy.Navigator_getBattery = function () {
 
 // EventTarget
 globalMy.EventTarget_addEventListener = function () {
-    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+    if (!(this instanceof EventTarget)) {
         throw new TypeError("Illegal invocation");
     }
     var result;
@@ -440,7 +440,7 @@ globalMy.EventTarget_addEventListener = function () {
     return result;
 };
 globalMy.EventTarget_dispatchEvent = function () {
-    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+    if (!(this instanceof EventTarget)) {
         throw new TypeError("Illegal invocation");
     }
     var result = true;
@@ -465,7 +465,7 @@ globalMy.EventTarget_dispatchEvent = function () {
     return result;
 };
 globalMy.EventTarget_removeEventListener = function () {
-    if (!(this instanceof EventTarget) || this == EventTarget.prototype) {
+    if (!(this instanceof EventTarget)) {
         throw new TypeError("Illegal invocation");
     }
     var result;
@@ -516,8 +516,7 @@ globalMy.HTMLCanvasElement_getContext = function (tag_name) {
         globalMy.jsdom_element[name] = result;
         Object.setPrototypeOf(globalMy.element[name], CanvasRenderingContext2D.prototype);
         result = globalMy.element[name];
-    }
-    else if (tag_name == "webgl2") {
+    } else if (tag_name == "webgl2") {
         var webGL2RenderingContext = {};
         Object.setPrototypeOf(webGL2RenderingContext, WebGL2RenderingContext.prototype);
         name = globalMy.setfoundName(webGL2RenderingContext);
@@ -665,6 +664,28 @@ globalMy.CanvasRenderingContext2D_set_strokeStyle = function (val) {
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle' + '  result => ', '' + result);
     }
+};
+globalMy.CanvasRenderingContext2D_getImageData = function () {
+    if (!(this instanceof CanvasRenderingContext2D)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_getImageData, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    result = this_.getImageData.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        var result_name = globalMy.foundJsdomName(result, "ImageData");
+        result = globalMy.element[result_name];
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_getImageData ' + '  result => ', '' + result);
+    }
+    return result;
 };
 
 // CharacterData 感觉有问题
@@ -2671,6 +2692,20 @@ globalMy.RTCPeerConnection_createOffer = function () {
     }
     return result;
 };
+globalMy.RTCPeerConnection_setLocalDescription = function () {
+    if (!(this instanceof RTCPeerConnection)) {
+        throw new TypeError("Illegal invocation");
+    }
+    var result;
+    //这里写方法实体
+    result = new Promise((resolve, reject) => {
+        resolve();
+    });
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了RTCPeerConnection_setLocalDescription, arguments => ', arguments, '  result => ', '' + result);
+    }
+    return result;
+};
 
 // Performance
 globalMy.Performance_now = function () {
@@ -3190,8 +3225,8 @@ globalMy.Crypto_getRandomValues = function (typedArray) {
     if (!(this instanceof Crypto)) {
         throw new TypeError("Illegal invocation");
     }
-    if (!(typedArray instanceof Uint8Array)) {
-        throw new TypeError('Argument must be a Uint8Array');
+    if (!(typedArray instanceof Uint16Array.__proto__)) {
+        throw new TypeError(`Failed to execute 'getRandomValues' on 'Crypto': parameter 1 is not of type 'ArrayBufferView'.`);
     }
     globalMy.crypto.randomBytes(typedArray.length).forEach((v, i) => {
         typedArray[i] = v;
@@ -3248,6 +3283,24 @@ globalMy.OffscreenCanvas_getContext = function (type) {
     //这里写方法实体
     if (globalMy.is_log) {
         console.log('[*]  调用了OffscreenCanvas_getContext, arguments => ', JSON.stringify(arguments), '  result => ', result)
+    }
+    return result;
+}
+
+// ImageData
+globalMy.ImageData_get_data = function () {
+    if (!(this instanceof ImageData)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了ImageData_get_data');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['data'];
+
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了ImageData_get_data, result => ', result)
     }
     return result;
 }
