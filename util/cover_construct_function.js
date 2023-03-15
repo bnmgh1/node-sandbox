@@ -171,6 +171,10 @@ globalMy.OffscreenCanvas = function OffscreenCanvas(width, height){
     return OffscreenCanvas;
 }
 
+globalMy.Worker = function Worker(){
+    throw new Error(`Failed to construct 'Worker': Access to the script at '${arguments[0]}' is denied by the document's Content Security Policy.`)
+}
+
 /*
 自定义Promise函数模块：IIFE
  */

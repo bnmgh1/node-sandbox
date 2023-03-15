@@ -248,11 +248,7 @@ globalMy.createEvent = function createEvent(type) {
         } else {
             Object.setPrototypeOf(globalMy.event[name], PointerEvent.prototype)
         }
-        Object.defineProperty(globalMy.event[name], "isTrusted",{
-            configurable:false,
-            enumerable:true,
-            get: Object.getOwnPropertyDescriptors(Utils).isTrusted.get,
-        });
+        Utils.defineIstrusted(globalMy.event[name]);
         var html_element = document.documentElement;
         globalMy.event_value[name]["target"] = html_element;
         globalMy.event_value[name]["srcElement"] = html_element;
@@ -291,11 +287,7 @@ globalMy.createEvent = function createEvent(type) {
     else if (type === "CustomEvent") {
         var name = globalMy.event.push({}) - 1;
         Object.setPrototypeOf(globalMy.event[name], CustomEvent.prototype);
-        Object.defineProperty(globalMy.event[name], "isTrusted",{
-            configurable:false,
-            enumerable:true,
-            get: Object.getOwnPropertyDescriptors(Utils).isTrusted.get,
-        });
+        Utils.defineIstrusted(globalMy.event[name]);
         globalMy.event_value[name] = {"isTrusted": false,
             "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
             "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
@@ -304,11 +296,7 @@ globalMy.createEvent = function createEvent(type) {
     else if (type === "UIEvent") {
         var name = globalMy.event.push({}) - 1;
         Object.setPrototypeOf(globalMy.event[name], UIEvent.prototype);
-        Object.defineProperty(globalMy.event[name], "isTrusted",{
-            configurable:false,
-            enumerable:true,
-            get: Utils.event_get_isTrusted,
-        });
+        Utils.defineIstrusted(globalMy.event[name]);
         globalMy.event_value[name] = {"isTrusted": false,
             "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
             "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
@@ -328,6 +316,15 @@ globalMy.call_error = function error(x, y) {
     e.stack = e.stack.replace("TypeError: ", y + x);
     throw e;
 };
+globalMy.generateUUID = function generateUUID() {
+  var d = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (d + Math.random() * 16) % 16 | 0;
+    d = Math.floor(d / 16);
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+  return uuid;
+}
 
 // jsdom解析html源码的节点未clone到本地对象里 该方法做初始化节点操作
 globalMy.initDomChildren = function (dom) {

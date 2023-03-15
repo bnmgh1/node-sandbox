@@ -64,6 +64,7 @@ globalMy.initEnv = function () {
         }
         wanfeng[i] = wanfeng.SetNative(data, i);
         Object.setPrototypeOf(wanfeng[i], Function.prototype);
+        Object.setPrototypeOf(wanfeng[i].prototype, Object.prototype);
     }
 
     Utils.initEnv();
@@ -779,12 +780,18 @@ globalMy.console_set_memory = function (val) {
 // window下的方法
 globalMy.window_setTimeout = function setTimeout(func, delay, ...args) {
     if (globalMy.is_log) {
-        globalMy.console.log("setTimeout func=>", func + '');
+        globalMy.console.log("setTimeout func =>", func.toString());
+        globalMy.console.log("setTimeout delay =>", delay);
+
         // globalMy.console.log("setTimeout args=>", args);
     }
+
     globalMy.IntervalId += 1;
     globalMy.Id.push(globalMy.IntervalId);
-    globalMy.func.push([func, args]);
+    if (delay == 0){
+        globalMy.func.push([func, args]);
+    }
+
     //返回一个id
     return globalMy.IntervalId;
 
@@ -6409,3 +6416,9 @@ globalMy.location_reload = function (val) {
 // 初始化window
 globalMy.initWindow.apply(this, [globalMy.dom_window, true]);
 
+// 用node的
+window.Blob = globalMy.node_Blob;
+Object.setPrototypeOf(Blob, Function.prototype);
+Object.setPrototypeOf(Blob.prototype, Object.prototype);
+
+delete External.prototype.getHostEnvironmentValue;

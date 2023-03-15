@@ -51,17 +51,19 @@ envCode += cover_function + pass_check;
 globalMy = {
     dom_window: dom.window,
     crypto: crypto,
+    node_Blob: Blob,
 };
 
 
 globalMy.newWindow = function (dom_window) {
-    const sandbox = {
+    const sandbox = vm.createContext({
         wanfeng: wanfeng,
         globalMy: {
             dom_window: dom_window
         },
         console: console,
-    }
+    })
+
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + ``;
     vm.runInNewContext(code, sandbox);
     return sandbox.zzz_mark_key;
@@ -222,7 +224,7 @@ function runShape() {
     }
     let workCode = fs.readFileSync("./work/shape.js");
     a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
+    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode + `globalMy.console.log(get_bmobdb());\ndebugger;`;
     vm.runInNewContext(code, sandbox);
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }

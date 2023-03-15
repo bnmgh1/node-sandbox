@@ -398,6 +398,21 @@ globalMy.WebGLRenderingContext_getContextAttributes = function () {
     return result;
 };
 
+// WebGL2RenderingContext
+globalMy.WebGL2RenderingContext_createShader = function () {
+    if (!(this instanceof WebGL2RenderingContext)) {
+        throw new TypeError("Illegal invocation");
+    }
+    let result;
+    //这里写方法实体
+    var name = globalMy.setfoundName({});
+    Object.setPrototypeOf(globalMy.element[name], WebGLShader.prototype);
+    result = globalMy.element[name];
+    if (globalMy.is_log) {
+        console.log('[*]  调用了WebGL2RenderingContext_createShader, arguments => ', JSON.stringify(arguments), '  result => ', result)
+    }
+    return result;
+}
 // Navigator
 globalMy.Navigator_getBattery = function () {
     if (!(this instanceof Navigator)) {
@@ -686,6 +701,39 @@ globalMy.CanvasRenderingContext2D_getImageData = function () {
         globalMy.console.log('[*]  调用了CanvasRenderingContext2D_getImageData ' + '  result => ', '' + result);
     }
     return result;
+};
+globalMy.CanvasRenderingContext2D_fillText = function () {
+  if (!(this instanceof CanvasRenderingContext2D)) {
+    throw new TypeError("Illegal invocation");
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText, arguments => ', arguments);
+  }
+  var result;
+  //这里写方法实体
+  var name = globalMy.foundName(this);
+  var this_ = globalMy.jsdom_element[name];
+  if (arguments[0] == '🏴󠁧󠁢󠁥󠁮󠁧󠁿'){
+      debugger;
+      arguments[0] = '';
+  }
+  result = this_.fillText.apply(this_, arguments);
+  if (result == undefined || result == null) {} else {
+    switch (typeof result) {
+      case "object":
+        debugger;
+        break;
+      case "function":
+        debugger;
+        break;
+      default:
+        break;
+    }
+  }
+  if (globalMy.is_log) {
+    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText ' + '  result => ', '' + result);
+  }
+  return result;
 };
 
 // CharacterData 感觉有问题
@@ -2597,7 +2645,6 @@ globalMy.HTMLFrameElement_get_contentWindow = function () {
                 break;
         }
     }
-    result = window;
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLFrameElement_get_contentWindow, result => ', '' + result);
     }
@@ -2629,6 +2676,7 @@ globalMy.HTMLIFrameElement_get_contentWindow = function () {
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
         // result = globalMy.newWindow(result, false);
+        result = globalMy.newWindow(result);
 
     }
     if (globalMy.is_log) {
@@ -3301,6 +3349,30 @@ globalMy.ImageData_get_data = function () {
 
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了ImageData_get_data, result => ', result)
+    }
+    return result;
+}
+
+// URL
+globalMy.URL_createObjectURL = function () {
+    if (this !== URL) {
+        throw new TypeError("Illegal invocation");
+    }
+    var result;
+    var uuid = globalMy.generateUUID();
+    result = `blob:${location.href}/${uuid}`;
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了URL_createObjectURL arguments => ', arguments, ' ,result => ', result)
+    }
+    return result;
+}
+globalMy.URL_revokeObjectURL = function () {
+    if (this !== URL) {
+        throw new TypeError("Illegal invocation");
+    }
+    var result;
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了URL_revokeObjectURL arguments => ', arguments, ' ,result => ', result)
     }
     return result;
 }
