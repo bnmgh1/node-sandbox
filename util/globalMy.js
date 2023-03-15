@@ -248,10 +248,16 @@ globalMy.createEvent = function createEvent(type) {
         } else {
             Object.setPrototypeOf(globalMy.event[name], PointerEvent.prototype)
         }
+        Object.defineProperty(globalMy.event[name], "isTrusted",{
+            configurable:false,
+            enumerable:true,
+            get: Object.getOwnPropertyDescriptors(Utils).isTrusted.get,
+        });
         var html_element = document.documentElement;
         globalMy.event_value[name]["target"] = html_element;
         globalMy.event_value[name]["srcElement"] = html_element;
         globalMy.event_value[name]["altKey"] = false;
+        globalMy.event_value[name]["isTrusted"] = true;
         // globalMy.event_value[name]["clientX"] = globalMy.getRandomNum(500, 1700)
         // globalMy.event_value[name]["clientY"] = globalMy.getRandomNum(200, 500)
         // globalMy.event_value[name]["screenX"] = globalMy.event_value[name]["clientX"]
@@ -283,17 +289,27 @@ globalMy.createEvent = function createEvent(type) {
 
     }
     else if (type === "CustomEvent") {
-        var name = globalMy.event.push({ "isTrusted": false, }) - 1;
+        var name = globalMy.event.push({}) - 1;
         Object.setPrototypeOf(globalMy.event[name], CustomEvent.prototype);
-        globalMy.event_value[name] = {
+        Object.defineProperty(globalMy.event[name], "isTrusted",{
+            configurable:false,
+            enumerable:true,
+            get: Object.getOwnPropertyDescriptors(Utils).isTrusted.get,
+        });
+        globalMy.event_value[name] = {"isTrusted": false,
             "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
             "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
         }
     }
     else if (type === "UIEvent") {
-        var name = globalMy.event.push({ "isTrusted": false, }) - 1;
+        var name = globalMy.event.push({}) - 1;
         Object.setPrototypeOf(globalMy.event[name], UIEvent.prototype);
-        globalMy.event_value[name] = {
+        Object.defineProperty(globalMy.event[name], "isTrusted",{
+            configurable:false,
+            enumerable:true,
+            get: Utils.event_get_isTrusted,
+        });
+        globalMy.event_value[name] = {"isTrusted": false,
             "detail": null, "type": "", "target": null, "currentTarget": null, "eventPhase": 0, "bubbles": false, "cancelable": false, "defaultPrevented": false, "composed": false,
             "timeStamp": Date.now() - globalMy.memory.begin_time, "srcElement": null, "returnValue": true, "cancelBubble": false,
         }

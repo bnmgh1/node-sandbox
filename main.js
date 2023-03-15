@@ -1,8 +1,9 @@
 var a = +new Date;
-const { VM, VMScript } = require('cyvm2');
+const {VM, VMScript} = require('cyvm2');
 // const {VM, VMScript} = require('vm2');
 const fs = require("fs");
 const vm = require("vm");
+const crypto = require('crypto');
 const jsdom = require("jsdom");
 const {JSDOM} = jsdom;
 var wanfeng = require("wanfeng");
@@ -48,11 +49,12 @@ init_env = cover_construct_function + init_env;
 envCode += cover_function + pass_check;
 
 globalMy = {
-    dom_window: dom.window
+    dom_window: dom.window,
+    crypto: crypto,
 };
 
 
-globalMy.newWindow = function(dom_window){
+globalMy.newWindow = function (dom_window) {
     const sandbox = {
         wanfeng: wanfeng,
         globalMy: {
@@ -172,7 +174,7 @@ function runX81() {
 }
 
 // ac_signature
-function runAcSign(){
+function runAcSign() {
     const sandbox = {
         wanfeng: wanfeng,
         globalMy: globalMy,
@@ -185,7 +187,7 @@ function runAcSign(){
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
-function run225(){
+function run225() {
     const sandbox = {
         wanfeng: wanfeng,
         globalMy: globalMy,
@@ -199,7 +201,7 @@ function run225(){
 }
 
 // 没初始化应该, 跟浏览器跑出来的调用不一样。。。
-function run140(){
+function run140() {
     const sandbox = {
         wanfeng: wanfeng,
         globalMy: globalMy,
@@ -212,7 +214,7 @@ function run140(){
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
-function runShape(){
+function runShape() {
     const sandbox = {
         wanfeng: wanfeng,
         globalMy: globalMy,

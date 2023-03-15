@@ -1,5 +1,18 @@
 // 函数实现, 对dump下来的函数进行覆盖. 怕到时候框架固定的写法会变, 所以实现的方法单独放在这个js里. 到时候好实现迁移
 
+// isTrusted
+globalMy.event_get_isTrusted = function () {
+    if (!(this instanceof Event)) {
+        throw new TypeError("Illegal invocation");
+    }
+    var result;
+    var foundName = globalMy.foundEventName(this);
+    result = globalMy.event_value[foundName]['isTrusted'];
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了event_get_isTrusted, result => ', '' + result);
+    }
+    return result;
+}
 
 // IDBRequest
 globalMy.IDBRequest_get_result = function () {
@@ -503,10 +516,18 @@ globalMy.HTMLCanvasElement_getContext = function (tag_name) {
         globalMy.jsdom_element[name] = result;
         Object.setPrototypeOf(globalMy.element[name], CanvasRenderingContext2D.prototype);
         result = globalMy.element[name];
-    }else if (tag_name == "webgl2"){
-
     }
-    else {
+    else if (tag_name == "webgl2") {
+        var webGL2RenderingContext = {};
+        Object.setPrototypeOf(webGL2RenderingContext, WebGL2RenderingContext.prototype);
+        name = globalMy.setfoundName(webGL2RenderingContext);
+        globalMy.value[name]['drawingBufferColorSpace'] = 'srgb';
+        globalMy.value[name]['unpackColorSpace'] = 'srgb';
+        globalMy.value[name]["canvas"] = this;
+        globalMy.value[name]["drawingBufferHeight"] = 150;
+        globalMy.value[name]["drawingBufferWidth"] = 300;
+        result = webGL2RenderingContext;
+    } else {
         debugger;
     }
     if (globalMy.is_log) {
@@ -594,7 +615,7 @@ globalMy.CanvasRenderingContext2D_measureText = function () {
         var textMetrics = {};
         Object.setPrototypeOf(textMetrics, TextMetrics.prototype);
         var result_name = globalMy.setfoundName(textMetrics);
-        for(var i in result){
+        for (var i in result) {
             globalMy.value[result_name][i] = result[i];
         }
         result = textMetrics;
@@ -605,44 +626,45 @@ globalMy.CanvasRenderingContext2D_measureText = function () {
     return result;
 };
 globalMy.CanvasRenderingContext2D_createLinearGradient = function () {
-  if (!(this instanceof CanvasRenderingContext2D)) {
-    throw new TypeError("Illegal invocation");
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient, arguments => ', arguments);
-  }
-  var result;
-  //这里写方法实体
-  var name = globalMy.foundName(this);
-  var this_ = globalMy.jsdom_element[name];
-  result = this_.createLinearGradient.apply(this_, arguments);
-  if (result == undefined || result == null) {} else {
-      var result_name = globalMy.foundJsdomName(result, "CanvasGradient");
-      result = globalMy.element[result_name];
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient ' + '  result => ', '' + result);
-  }
-  return result;
+    if (!(this instanceof CanvasRenderingContext2D)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    result = this_.createLinearGradient.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        var result_name = globalMy.foundJsdomName(result, "CanvasGradient");
+        result = globalMy.element[result_name];
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_createLinearGradient ' + '  result => ', '' + result);
+    }
+    return result;
 };
 globalMy.CanvasRenderingContext2D_set_strokeStyle = function (val) {
-  if (!(this instanceof CanvasRenderingContext2D)) {
-    throw new TypeError("Illegal invocation");
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle, 传参val => ' + val);
-  }
-  var result;
-  var foundName = globalMy.foundName(this);
-  if (val == undefined || val == null) {
-    globalMy.jsdom_element[foundName]['strokeStyle'] = val;
-  } else {
-      var name = globalMy.foundName(val);
-      globalMy.jsdom_element[foundName]['strokeStyle'] = globalMy.jsdom_element[name];
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle' + '  result => ', '' + result);
-  }
+    if (!(this instanceof CanvasRenderingContext2D)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null || typeof val == "string") {
+        globalMy.jsdom_element[foundName]['strokeStyle'] = val;
+    } else {
+        var name = globalMy.foundName(val);
+        globalMy.jsdom_element[foundName]['strokeStyle'] = globalMy.jsdom_element[name];
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_set_strokeStyle' + '  result => ', '' + result);
+    }
 };
 
 // CharacterData 感觉有问题
@@ -2279,6 +2301,7 @@ globalMy.Document_querySelectorAll = function () {
         var nodeList = {};
         Object.setPrototypeOf(nodeList, NodeList.prototype);
         var result_name = globalMy.setfoundName(nodeList);
+        globalMy.jsdom_element[result_name] = result;
         globalMy.value[result_name].length = length;
         for (var i = 0; i < length; i++) {
             name = globalMy.foundJsdomName(result[i]);
@@ -3163,16 +3186,21 @@ globalMy.CustomEvent_initCustomEvent = function () {
 }
 
 // Crypto
-globalMy.Crypto_getRandomValues = function (array32, ...args) {
+globalMy.Crypto_getRandomValues = function (typedArray) {
     if (!(this instanceof Crypto)) {
         throw new TypeError("Illegal invocation");
     }
-    let result = array32;
+    if (!(typedArray instanceof Uint8Array)) {
+        throw new TypeError('Argument must be a Uint8Array');
+    }
+    globalMy.crypto.randomBytes(typedArray.length).forEach((v, i) => {
+        typedArray[i] = v;
+    });
     //这里写方法实体
     if (globalMy.is_log) {
-        console.log('[*]  调用了Crypto_getRandomValues, arguments => ', JSON.stringify(arguments), '  result => ', result)
+        console.log('[*]  调用了Crypto_getRandomValues, arguments => ', JSON.stringify(arguments), '  result => ', typedArray)
     }
-    return result;
+    return typedArray;
 }
 
 // OffscreenCanvas
