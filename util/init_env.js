@@ -1,24 +1,21 @@
 
+// 堆栈拦截处
 Utils.Error_get_stack = function () {
-    // debugger;
+    debugger;
     // var stack = arguments[0];
-    // var stack = arguments[0].split("\n");
-    var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
-    for (var i = 0; i < stack.length; i++) {
+    var stack = arguments[0].split("\n");
+    var length = stack.length;
+    for (var i = 0; i < length; i++) {
         if (stack[i].indexOf(`at globalMy.`) > -1){
             stack.splice(i, 1);
             continue;
         }
-        else if (stack[i].indexOf(`at Module._compile (node:`) > -1) {
-            stack.splice(i, 1);
-            continue;
-        }
-        else if (stack[i].indexOf(`at Script.runInContext`) > -1){
-            stack.splice(i, 1);
-            continue;
+        else if(stack[i].indexOf(`.runInContext (node:`) > -1){
+            stack.splice(i, length - i + 1);
+            break;
         }
     }
-    stack = stack.join('\n');
+    stack = stack.join('\n').replace(/evalmachine.<anonymous>/g, "xxx.js");
     if (stack.indexOf("DOMException: ") > -1){
         stack = stack.replace("Error: ", "")
     }

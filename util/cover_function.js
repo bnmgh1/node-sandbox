@@ -2055,7 +2055,6 @@ globalMy.Document_get_body = function () {
             result = globalMy.element[name];
         }
     }
-
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_get_body,result => ', '' + result);
     }
@@ -2681,16 +2680,7 @@ globalMy.HTMLFrameElement_get_contentWindow = function () {
     var foundName = globalMy.foundName(this);
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
-        switch (typeof result) {
-            case "object":
-                debugger;
-                break;
-            case "function":
-                debugger;
-                break;
-            default:
-                break;
-        }
+        result = globalMy.newWindow(result);
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLFrameElement_get_contentWindow, result => ', '' + result);
@@ -2724,7 +2714,6 @@ globalMy.HTMLIFrameElement_get_contentWindow = function () {
     if (result != null && result != undefined) {
         // result = globalMy.newWindow(result, false);
         result = globalMy.newWindow(result);
-
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLIFrameElement_get_contentWindow, result => ', '' + result);
@@ -3207,7 +3196,7 @@ globalMy.StorageManager_estimate = function () {
     }
     return result;
 };
-// OscillatorNode
+
 
 // OfflineAudioContext
 globalMy.OfflineAudioContext_startRendering = function () {
