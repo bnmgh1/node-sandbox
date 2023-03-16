@@ -2680,7 +2680,11 @@ globalMy.HTMLFrameElement_get_contentWindow = function () {
     var foundName = globalMy.foundName(this);
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
-        result = globalMy.newWindow(result);
+        var contentWindow = globalMy.value[foundName]['contentWindow'];
+        if (!contentWindow){
+            result = globalMy.newWindow(globalMy.jsdom_element[foundName]);
+            globalMy.value[foundName]['contentWindow'] = result;
+        }else result = contentWindow;
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLFrameElement_get_contentWindow, result => ', '' + result);
@@ -2712,8 +2716,12 @@ globalMy.HTMLIFrameElement_get_contentWindow = function () {
     var foundName = globalMy.foundName(this);
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
-        // result = globalMy.newWindow(result, false);
-        result = globalMy.newWindow(result);
+        var contentWindow = globalMy.value[foundName]['contentWindow'];
+        if (!contentWindow){
+            result = globalMy.newWindow( globalMy.jsdom_element[foundName]);
+            globalMy.value[foundName]['contentWindow'] = result;
+        }else result = contentWindow;
+
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLIFrameElement_get_contentWindow, result => ', '' + result);

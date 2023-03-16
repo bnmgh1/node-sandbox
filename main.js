@@ -49,17 +49,21 @@ globalMy = {
 };
 
 
-globalMy.newWindow = function (dom_window) {
-    const sandbox = vm.createContext({
+globalMy.newWindow = function (ifr) {
+    const sandbox = {
         wanfeng: wanfeng,
         globalMy: {
-            dom_window: dom_window
+            crypto: crypto,
+            node_Blob: Blob,
+            node_DOMException: DOMException,
+            dom_window: ifr.contentWindow,
+            window_frameElement: ifr,
         },
         console: console,
-    })
+    }
 
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + ``;
-    vm.runInNewContext(code, sandbox);
+    var code = globalMy_js + init_env + envCode + "\r\n" + ``;
+    vm.runInNewContext(code.replace("debugger;",""), sandbox);
     return sandbox.zzz_mark_key;
 }
 
@@ -75,13 +79,13 @@ function runRsVmp() {
     let workCode = fs.readFileSync("./work/rsvmp.js");
     a = +new Date;
     var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `globalMy.console.log(document.cookie);\n` +
-//         `new Promise((resolve, reject) => {
-//     var event = globalMy.createEvent("load")
-//     resolve(event);
-// }).then((event) => {
-//     window.dispatchEvent(event);
-// });`
-    `window.dispatchEvent(globalMy.createEvent("load"));` + endCode;
+        //         `new Promise((resolve, reject) => {
+        //     var event = globalMy.createEvent("load")
+        //     resolve(event);
+        // }).then((event) => {
+        //     window.dispatchEvent(event);
+        // });`
+        `window.dispatchEvent(globalMy.createEvent("load"));` + endCode;
     vm.runInNewContext(code, sandbox);
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }

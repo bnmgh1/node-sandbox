@@ -1,22 +1,19 @@
-
 // 堆栈拦截处
 Utils.Error_get_stack = function () {
-    debugger;
     // var stack = arguments[0];
     var stack = arguments[0].split("\n");
     var length = stack.length;
     for (var i = 0; i < length; i++) {
-        if (stack[i].indexOf(`at globalMy.`) > -1){
+        if (stack[i].indexOf(`at globalMy.`) > -1) {
             stack.splice(i, 1);
             continue;
-        }
-        else if(stack[i].indexOf(`.runInContext (node:`) > -1){
+        } else if (stack[i].indexOf(`.runInContext (node:`) > -1) {
             stack.splice(i, length - i + 1);
             break;
         }
     }
     stack = stack.join('\n').replace(/evalmachine.<anonymous>/g, "xxx.js");
-    if (stack.indexOf("DOMException: ") > -1){
+    if (stack.indexOf("DOMException: ") > -1) {
         stack = stack.replace("Error: ", "")
     }
     // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
@@ -47,8 +44,7 @@ globalMy.initEnv = function () {
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
-            }
-            else {
+            } else {
                 // 说明可以直接new
                 globalMy[i] = function () {
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
@@ -792,7 +788,7 @@ globalMy.window_setTimeout = function setTimeout(func, delay, ...args) {
 
     globalMy.IntervalId += 1;
     globalMy.Id.push(globalMy.IntervalId);
-    if (delay == 0){
+    if (delay == 0) {
         globalMy.func.push([func, args]);
     }
 
@@ -6420,14 +6416,19 @@ globalMy.location_reload = function (val) {
 // 初始化window
 globalMy.initWindow.apply(this, [globalMy.dom_window, true]);
 
-// 用node的
-window.Blob = globalMy.node_Blob;
-Object.setPrototypeOf(Blob, Function.prototype);
-Object.setPrototypeOf(Blob.prototype, Object.prototype);
+// 用node的Blob
+if (globalMy.node_Blob) {
+    window.Blob = globalMy.node_Blob;
+    Object.setPrototypeOf(Blob, Function.prototype);
+    Object.setPrototypeOf(Blob.prototype, Object.prototype);
+}
 
-window.DOMException = globalMy.node_DOMException;
-Object.setPrototypeOf(DOMException, Function.prototype);
-Object.setPrototypeOf(DOMException.prototype, Object.prototype);
+// DOMException
+if (globalMy.node_DOMException) {
+    window.DOMException = globalMy.node_DOMException;
+    Object.setPrototypeOf(DOMException, Function.prototype);
+    Object.setPrototypeOf(DOMException.prototype, Object.prototype);
+}
 
-// 谷歌没有这个方法
+// 谷歌浏览器没有这个方法
 delete External.prototype.getHostEnvironmentValue;
