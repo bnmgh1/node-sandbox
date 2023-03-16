@@ -21,14 +21,14 @@ var html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 </body>
 </html>`
 // html = `<div id="baxia-password" style="display: block;"><div class=" custom-dialog-wrapper" style="display: block;"><iframe id="baxia-dialog-content" frameborder="none" src="https://login.taobao.com//newlogin/login.do/_____tmd_____/punish?x5secdata=xbb285061a9d6d6ae38b7729e5a610cd201678606637a-717315356a-1443198347abczc2dl15398888102a__bx__login.taobao.com%3A443%2Fnewlogin%2Flogin.do&amp;x5step=2&amp;ncLanguage=zh_CN" style="height: 34px; position: static;"></iframe></div></div>`;
+html = fs.readFileSync(`./ret.html`);
 let configure = {
-    // url:"https://pastebin.com/login",
     // url: "http://epub.cnipa.gov.cn/SW/",
-    url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
+    // url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
     // url: 'https://www.zhipin.com/web/geek/job?query=%E7%88%AC%E8%99%AB&city=101190100&page=2',
     // url: 'https://www.toutiao.com/',
     // url: 'https://login.taobao.com/member/login.jhtml?spm=a21bo.jianhua.754894437.1.5af911d9ha3rTs&f=top&redirectURL=https%3A%2F%2Fwww.taobao.com%2F',
-    // url: 'https://passport.tujia.com/PortalSite/LoginPage/?originUrl=https%3A%2F%2Fwww.tujia.com%2F',
+    url: 'http://zxgk.court.gov.cn/shixin/',
 }
 const dom = new JSDOM(html, configure);
 
@@ -52,6 +52,7 @@ globalMy = {
     dom_window: dom.window,
     crypto: crypto,
     node_Blob: Blob,
+    node_DOMException: DOMException,
 };
 
 
@@ -78,16 +79,18 @@ function runRsVmp() {
     }
     let workCode = fs.readFileSync("./work/rsvmp.js");
     a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `
-new Promise((resolve, reject) => {
+    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `globalMy.console.log(document.cookie);` +
+        `new Promise((resolve, reject) => {
     var event = globalMy.createEvent("load")
     resolve(event);
 }).then((event) => {
     window.dispatchEvent(event);
 });` + endCode + `
-globalMy.console.log(document.cookie);
 globalMy.console.log(localStorage._$rc);
 `;
+    // var vm2 = new VM({sandbox: sandbox});
+    // var script = new VMScript(code, './zcj.js');
+    // vm2.run(script);
     vm.runInNewContext(code, sandbox);
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
@@ -229,14 +232,14 @@ function runShape() {
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
-// runRsVmp();
+runRsVmp();
 // runBoss();
 // runZhihu();
 // runX81();
 // runAcSign();
 // run225();
 // run140();
-runShape();
+// runShape();
 
 //// vm2
 // const sandbox = {

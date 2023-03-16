@@ -60,11 +60,7 @@ globalMy.XMLHttpRequest = function XMLHttpRequest() {
 
 globalMy.WebSocket = function WebSocket(x) {
     if (x === 'Create\x20WebSocket' || x === "itsgonnafail") {
-        var obj = { "stack": "DOMException: Failed to construct 'WebSocket': The URL 'itsgonnafail' is invalid.\n    at _$nA (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:127550)\n    at _$mx (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:135940)\n    at _$hU (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:138095)\n    at _$mx (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:132342)\n    at _$g$ (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:129637)\n    at _$mx (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:133563)\n    at _$g$ (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:129637)\n    at _$mx (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:133563)\n    at _$g$ (eval at _$fV (http://epub.cnipa.gov.cn/DMkKrRq2vkXD/3lyVKWvJXsxS.ce3512e.js:3:4694), <anonymous>:3:129637)" }
-        var err = new Error;
-        err.message = "DOMException: Failed to construct 'WebSocket': The URL 'itsgonnafail' is invalid.";
-        err.stack = obj.stack;
-        throw err;
+        throw new DOMException("DOMException: Failed to construct 'WebSocket': The URL 'itsgonnafail' is invalid.")
     }
 }
 

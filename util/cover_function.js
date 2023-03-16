@@ -703,37 +703,38 @@ globalMy.CanvasRenderingContext2D_getImageData = function () {
     return result;
 };
 globalMy.CanvasRenderingContext2D_fillText = function () {
-  if (!(this instanceof CanvasRenderingContext2D)) {
-    throw new TypeError("Illegal invocation");
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText, arguments => ', arguments);
-  }
-  var result;
-  //这里写方法实体
-  var name = globalMy.foundName(this);
-  var this_ = globalMy.jsdom_element[name];
-  if (arguments[0] == '🏴󠁧󠁢󠁥󠁮󠁧󠁿'){
-      debugger;
-      arguments[0] = '';
-  }
-  result = this_.fillText.apply(this_, arguments);
-  if (result == undefined || result == null) {} else {
-    switch (typeof result) {
-      case "object":
-        debugger;
-        break;
-      case "function":
-        debugger;
-        break;
-      default:
-        break;
+    if (!(this instanceof CanvasRenderingContext2D)) {
+        throw new TypeError("Illegal invocation");
     }
-  }
-  if (globalMy.is_log) {
-    globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText ' + '  result => ', '' + result);
-  }
-  return result;
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    if (arguments[0] == '🏴󠁧󠁢󠁥󠁮󠁧󠁿') {
+        debugger;
+        arguments[0] = '';
+    }
+    result = this_.fillText.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        switch (typeof result) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                debugger;
+                break;
+            default:
+                break;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了CanvasRenderingContext2D_fillText ' + '  result => ', '' + result);
+    }
+    return result;
 };
 
 // CharacterData 感觉有问题
@@ -1548,9 +1549,6 @@ globalMy.Node_get_parentElement = function () {
 
 // Document
 globalMy.Document_get_hidden = function () {
-    if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了Document_get_hidden');
-    }
     var result;
     result = false;
     // var foundName = globalMy.foundName(this);
@@ -1590,6 +1588,9 @@ globalMy.Document_get_all = function () {
     }
     result = globalMy.value[foundName].all;
     globalMy.value[name].length = length;
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_all, arguments => ', arguments);
+    }
     return result;
 };
 globalMy.Document_createEvent = function (type) {
@@ -1600,8 +1601,8 @@ globalMy.Document_createEvent = function (type) {
     }
     switch (type) {
         case "TouchEvent":
-            globalMy.call_error("Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.", "Error: ");
-            break
+            // globalMy.call_error("Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.", "DOMException: ");
+            throw new DOMException("DOMException: Failed to execute 'createEvent' on 'Document': The provided event type ('TouchEvent') is invalid.")
         case "CustomEvent":
             result = globalMy.createEvent(type);
             break
@@ -2043,12 +2044,18 @@ globalMy.Document_get_head = function () {
 globalMy.Document_get_body = function () {
     var result;
     var foundName = globalMy.foundName(this);
-    result = globalMy.jsdom_element[foundName]['body'];
-    if (result == undefined || result == null) {
+    if (globalMy.first_get_body) {
+        result = null;
+        globalMy.first_get_body = false;
     } else {
-        var name = globalMy.foundJsdomName(result);
-        result = globalMy.element[name];
+        result = globalMy.jsdom_element[foundName]['body'];
+        if (result == undefined || result == null) {
+        } else {
+            var name = globalMy.foundJsdomName(result);
+            result = globalMy.element[name];
+        }
     }
+
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_get_body,result => ', '' + result);
     }
@@ -2170,15 +2177,11 @@ globalMy.Document_set_cookie = function (val) {
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_set_cookie, 传参val => ' + val);
     }
-    var result;
     var foundName = globalMy.foundName(this);
     if (val == undefined || val == null || typeof val != "string") {
         debugger;
     } else {
         globalMy.jsdom_element[foundName]['cookie'] = val;
-    }
-    if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了Document_set_cookie' + '  result => ', '' + result);
     }
 };
 globalMy.Document_createExpression = function () {
@@ -2383,6 +2386,46 @@ globalMy.Document_querySelectorAll = function () {
     }
     return result;
 };
+globalMy.Document_get_onselectionchange = function () {
+    if (!(this instanceof Document)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_onselectionchange');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onselectionchange'];
+    if (result != null && result != undefined) {
+        switch (typeof result) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                debugger;
+                break;
+            default:
+                break;
+        }
+    } else result = null;
+
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_onselectionchange, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.Document_get_visibilityState = function () {
+    if (!(this instanceof Document)) {
+        throw new TypeError("Illegal invocation");
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['visibilityState'];
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_get_visibilityState, result => ', '' + result);
+    }
+    return result;
+};
 
 // MutationRecord
 globalMy.MutationRecord_get_addedNodes = function () {
@@ -2413,12 +2456,18 @@ globalMy.MutationRecord_get_addedNodes = function () {
 globalMy.HTMLElement_get_style = function () {
     var result;
     var name = globalMy.foundName(this);
-    var this_ = globalMy.jsdom_element[name];
-    result = this_.style;
-    if (result == undefined || result == null) {
-    } else {
-        var name = globalMy.foundJsdomName(result, "CSSStyleDeclaration");
-        result = globalMy.element[name];
+    // result = this_.style;
+    result = globalMy.value[name]["style"];
+    if (!result) {
+        var this_ = globalMy.jsdom_element[name];
+
+        result = {};
+        Object.setPrototypeOf(result, CSSStyleDeclaration.prototype);
+        for (var i in globalMy.style) {
+            result[i] = globalMy.style[i];
+        }
+        result["fontFamily"] = this_.style.fontFamily;
+        globalMy.value[name]["style"] = result;
     }
     if (globalMy.is_log) {
         // globalMy.console.log('[*]  调用了HTMLElement_get_style,result => ', '' + result)
@@ -2428,35 +2477,33 @@ globalMy.HTMLElement_get_style = function () {
 globalMy.HTMLElement_get_offsetWidth = function () {
     // if (globalMy.is_log) { globalMy.console.log('[*]  调用了HTMLElement_get_offsetWidth'); }
     var result;
-    var name = globalMy.foundName(this);
-    var this_ = globalMy.element[name];
-    var fontFamily = this_.style.fontFamily;
-    if (!fontFamily) fontFamily = this_.style.fontFamily = globalMy.jsdom_element[name].style.fontFamily;
-    if (fontFamily == null || fontFamily == undefined) result = 0; else if (globalMy.memory.fontFamily_1.indexOf(fontFamily) > -1) {
+    // var name = globalMy.foundName(this);
+    var style = this.style;
+    var fontFamily = style.fontFamily;
+    if (globalMy.memory.fontFamily_1.indexOf(fontFamily) > -1) {
         result = 1327;
     } else if (globalMy.memory.fontFamily_2.indexOf(fontFamily) > -1) {
         result = 912;
-    }
+    } else result = 0;
+
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了HTMLElement_get_offsetWidth, result => ', '' + result);
+        globalMy.console.log('[*]  调用了HTMLElement_get_offsetWidth, result => ', '' + result, ", fontFamily => ", fontFamily);
     }
     return result;
 };
 globalMy.HTMLElement_get_offsetHeight = function () {
     // if (globalMy.is_log) { globalMy.console.log('[*]  调用了HTMLElement_get_offsetHeight'); }
     var result;
-    var name = globalMy.foundName(this);
-    var this_ = globalMy.element[name];
-    var fontFamily = this_.style.fontFamily;
-    if (!fontFamily) fontFamily = this_.style.fontFamily = globalMy.jsdom_element[name].style.fontFamily;
-    if (fontFamily == null || fontFamily == undefined) result = 0; else if (globalMy.memory.fontFamily_1.indexOf(fontFamily) > -1) {
+    // var name = globalMy.foundName(this);
+    var style = this.style;
+    var fontFamily = style.fontFamily;
+    if (globalMy.memory.fontFamily_1.indexOf(fontFamily) > -1) {
         result = 151;
     } else if (globalMy.memory.fontFamily_2.indexOf(fontFamily) > -1) {
         result = 114;
     } else result = 0;
-    result = 69;
     if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了HTMLElement_get_offsetHeight, result => ', '' + result);
+        globalMy.console.log('[*]  调用了HTMLElement_get_offsetHeight, result => ', '' + result, ", fontFamily => ", fontFamily);
     }
     return result;
 };

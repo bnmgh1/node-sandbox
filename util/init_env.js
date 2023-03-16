@@ -1,22 +1,27 @@
 
 Utils.Error_get_stack = function () {
     // debugger;
-    var stack = arguments[0];
-    // var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
-    // for (var i = 0; i < stack.length; i++) {
-    //     if (stack[i].indexOf(`at globalMy.`) != -1){
-    //         stack.splice(i, 1);
-    //     }
-    //     if (stack[i].indexOf(`at Module._compile (node:`) != -1) {
-    //         stack = stack.slice(0, i);
-    //         break;
-    //     }
-    //     if (stack[i].indexOf(`at Script.runInContext`) != -1){
-    //         stack = stack.slice(0, i);
-    //         break;
-    //     }
-    // }
-    // stack = stack.join('\n');
+    // var stack = arguments[0];
+    // var stack = arguments[0].split("\n");
+    var stack = arguments[0].replace(/evalmachine.<anonymous>/g, "xxx.js").split("\n");
+    for (var i = 0; i < stack.length; i++) {
+        if (stack[i].indexOf(`at globalMy.`) > -1){
+            stack.splice(i, 1);
+            continue;
+        }
+        else if (stack[i].indexOf(`at Module._compile (node:`) > -1) {
+            stack.splice(i, 1);
+            continue;
+        }
+        else if (stack[i].indexOf(`at Script.runInContext`) > -1){
+            stack.splice(i, 1);
+            continue;
+        }
+    }
+    stack = stack.join('\n');
+    if (stack.indexOf("DOMException: ") > -1){
+        stack = stack.replace("Error: ", "")
+    }
     // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
     console.log("报错堆栈 -> ", stack);
     return stack;
@@ -120,6 +125,8 @@ globalMy.initWindow = function (dom_window, is_init) {
     globalMy.jsdom_element[document_name] = dom_window.document;
     Object.setPrototypeOf(globalMy.element[document_name], HTMLDocument.prototype);
     globalMy.value[document_name].readyState = "complete";
+
+    globalMy.value[document_name].visibilityState = "visible";
 
     // document.all
     globalMy.value[document_name].all = new wanfeng.xtd;
@@ -6421,4 +6428,9 @@ window.Blob = globalMy.node_Blob;
 Object.setPrototypeOf(Blob, Function.prototype);
 Object.setPrototypeOf(Blob.prototype, Object.prototype);
 
+window.DOMException = globalMy.node_DOMException;
+Object.setPrototypeOf(DOMException, Function.prototype);
+Object.setPrototypeOf(DOMException.prototype, Object.prototype);
+
+// 谷歌没有这个方法
 delete External.prototype.getHostEnvironmentValue;
