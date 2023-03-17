@@ -14,7 +14,8 @@ a = +new Date;
 
 // html = `<div id="baxia-password" style="display: block;"><div class=" custom-dialog-wrapper" style="display: block;"><iframe id="baxia-dialog-content" frameborder="none" src="https://login.taobao.com//newlogin/login.do/_____tmd_____/punish?x5secdata=xbb285061a9d6d6ae38b7729e5a610cd201678606637a-717315356a-1443198347abczc2dl15398888102a__bx__login.taobao.com%3A443%2Fnewlogin%2Flogin.do&amp;x5step=2&amp;ncLanguage=zh_CN" style="height: 34px; position: static;"></iframe></div></div>`;
 
-html = fs.readFileSync(`./ret.html`);
+// html = fs.readFileSync(`./ret.html`);
+html = fs.readFileSync(`./tj140.html`);
 let configure = {
     // url: "http://epub.cnipa.gov.cn/SW/",
     // url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
@@ -227,13 +228,13 @@ function runShape() {
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
-runRsVmp();
+// runRsVmp();
 // runBoss();
 // runZhihu();
 // runX81();
 // runAcSign();
 // run225();
-// run140();
+run140();
 // runShape();
 
 //// vm2

@@ -1,22 +1,23 @@
 // 堆栈拦截处
 Utils.Error_get_stack = function () {
-    // var stack = arguments[0];
-    var stack = arguments[0].split("\n");
-    var length = stack.length;
-    for (var i = 0; i < length; i++) {
-        if (stack[i].indexOf(`at globalMy.`) > -1) {
-            stack.splice(i, 1);
-            continue;
-        } else if (stack[i].indexOf(`.runInContext (node:`) > -1) {
-            stack.splice(i, length - i + 1);
-            break;
-        }
-    }
-    stack = stack.join('\n').replace(/evalmachine.<anonymous>/g, "xxx.js");
-    if (stack.indexOf("DOMException: ") > -1) {
-        stack = stack.replace("Error: ", "")
-    }
-    // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
+    // 改堆栈真的会有不少奇奇怪怪的bug
+    var stack = arguments[0];
+    // var stack = arguments[0].split("\n");
+    // var length = stack.length;
+    // for (var i = 0; i < length; i++) {
+    //     if (stack[i].indexOf(`at globalMy.`) > -1) {
+    //         stack.splice(i, 1);
+    //         continue;
+    //     } else if (stack[i].indexOf(`.runInContext (node:`) > -1) {
+    //         stack.splice(i, length - i + 1);
+    //         break;
+    //     }
+    // }
+    // stack = stack.join('\n').replace(/evalmachine.<anonymous>/g, "xxx.js");
+    // if (stack.indexOf("DOMException: ") > -1) {
+    //     stack = stack.replace("Error: ", "")
+    // }
+    // // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
     console.log("报错堆栈 -> ", stack);
     return stack;
 }
@@ -35,7 +36,14 @@ globalMy.initEnv = function () {
         // 自定义的构造函数 比如Document. 这里只是随便生成了一个函数
         if (!(i in globalMy)) {
             if (err.length == 2) {
-                // 如果new 传参少于某长度就会报错.
+                if (err[1] == ""){
+                    globalMy[i] = function () {
+                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
+                    throw new TypeError("Illegal constructor");
+                };
+                }
+                else{
+                    // 如果new 传参少于某长度就会报错.
                 var less_code = globalMy.arg_less_code.replace('replace', i).replace("1", err[1].toString());
                 var len = err[1];
                 globalMy[i] = function () {
@@ -44,6 +52,8 @@ globalMy.initEnv = function () {
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
+                }
+
             } else {
                 // 说明可以直接new
                 globalMy[i] = function () {
@@ -788,10 +798,10 @@ globalMy.window_setTimeout = function setTimeout(func, delay, ...args) {
 
     globalMy.IntervalId += 1;
     globalMy.Id.push(globalMy.IntervalId);
-    if (delay == 0) {
-        globalMy.func.push([func, args]);
-    }
-
+    // if (delay == 0) {
+    //     globalMy.func.push([func, args]);
+    // }
+    globalMy.func.push([func, args]);
     //返回一个id
     return globalMy.IntervalId;
 

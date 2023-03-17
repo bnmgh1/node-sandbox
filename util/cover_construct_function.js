@@ -1,4 +1,3 @@
-
 // 构造函数实现覆盖
 globalMy.RTCPeerConnection = function () {
     var name = globalMy.setfoundName(this);
@@ -31,16 +30,23 @@ globalMy.RTCPeerConnection = function () {
 }
 
 globalMy.Image = function () {
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> Image, ", "arguments => ", arguments)
+    }
     var name = globalMy.setfoundName(this);
-    globalMy.jsdom_element[name] = document.createElement("img");
+    globalMy.jsdom_element[name] = globalMy.dom_window.document.createElement("img");
     return this;
 };
 
 globalMy.XMLHttpRequest = function XMLHttpRequest() {
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> XMLHttpRequest, ", "arguments => ", arguments)
+    }
     let xhr = {};
     Object.setPrototypeOf(xhr, XMLHttpRequest.prototype);
     let name = globalMy.setfoundName(xhr);
     globalMy.value[name]["readyState"] = 0;
+    globalMy.value[name]["withCredentials"] = false;
     globalMy.value[name]["onreadystatechange"] = null;
     let upload = {};
     Object.setPrototypeOf(upload, XMLHttpRequestUpload.prototype);
@@ -59,13 +65,19 @@ globalMy.XMLHttpRequest = function XMLHttpRequest() {
 }
 
 globalMy.WebSocket = function WebSocket(x) {
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> WebSocket, ", "arguments => ", arguments)
+    }
     if (x === 'Create\x20WebSocket' || x === "itsgonnafail") {
         throw new DOMException("DOMException: Failed to construct 'WebSocket': The URL 'itsgonnafail' is invalid.")
     }
 }
 
 globalMy.MutationObserver = function MutationObserver() {
-    if (arguments.length < 1){
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> MutationObserver, ", "arguments => ", arguments)
+    }
+    if (arguments.length < 1) {
         throw new TypeError(`Failed to construct 'MutationObserver': 1 argument required, but only 0 present.`)
     }
     var callback_function = arguments[0];
@@ -153,7 +165,7 @@ globalMy.AudioContext = function AudioContext() {
     return audioContext;
 }
 
-globalMy.OffscreenCanvas = function OffscreenCanvas(width, height){
+globalMy.OffscreenCanvas = function OffscreenCanvas(width, height) {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> OffscreenCanvas, ", "arguments => ", arguments)
     }
@@ -167,7 +179,10 @@ globalMy.OffscreenCanvas = function OffscreenCanvas(width, height){
     return OffscreenCanvas;
 }
 
-globalMy.Worker = function Worker(){
+globalMy.Worker = function Worker() {
+    if (globalMy.is_log) {
+        globalMy.console.log("[*]  new 构造函数 -> Worker, ", "arguments => ", arguments)
+    }
     throw new Error(`Failed to construct 'Worker': Access to the script at '${arguments[0]}' is denied by the document's Content Security Policy.`)
 }
 

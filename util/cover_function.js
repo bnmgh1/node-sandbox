@@ -72,15 +72,17 @@ globalMy.IDBObjectStore_put = function () {
 };
 
 // DOMTokenList
-globalMy.DOMTokenList_contains = function () {
-    let result;
-    //这里写方法实体
-    if (arguments[0] == "EkcP") result = true;
-    if (globalMy.is_log) {
-        console.log('[*]  调用了DOMTokenList_contains, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
-    }
-    return result;
-};
+// globalMy.DOMTokenList_contains = function () {
+//     let result;
+//     //这里写方法实体
+//     if (arguments[0] == "EkcP") result = true;
+//
+//     if (globalMy.is_log) {
+//         console.log('[*]  调用了DOMTokenList_contains, arguments => ' + JSON.stringify(arguments) + '  result => ', result);
+//     }
+//     return result;
+// };
+
 
 // Database
 globalMy.Database_transaction = function () {
@@ -813,8 +815,8 @@ globalMy.XMLHttpRequest_send = function () {
         this_.onreadystatechange();
     }, 0);
     setTimeout(function () {
-        globalMy.value[foundName]['responseText'] = globalMy.response_text[globalMy.response_text_time];
-        globalMy.response_text_time += 1;
+        globalMy.value[foundName]['responseText'] = "{\"tn\":\"T2gAUWfFYei6qQeIehIPRVtmA7yUjyIA12vsB0muboEYBq1vwf9I0-wQYCuBSGiEtPA=\",\"id\":\"GD0203180ACE20CCE2FB62694D91B73E3A58F0B026588623A1D\"}";
+        globalMy.value[foundName]['response'] = "{\"tn\":\"T2gAUWfFYei6qQeIehIPRVtmA7yUjyIA12vsB0muboEYBq1vwf9I0-wQYCuBSGiEtPA=\",\"id\":\"GD0203180ACE20CCE2FB62694D91B73E3A58F0B026588623A1D\"}";
         globalMy.value[foundName]['readyState'] = 4;
         this_.onreadystatechange();
     }, 0);
@@ -823,15 +825,7 @@ globalMy.XMLHttpRequest_send = function () {
     }
     return result;
 };
-globalMy.XMLHttpRequest_get_responseText = function () {
-    var result;
-    var foundName = globalMy.foundName(this);
-    result = globalMy.value[foundName]['responseText'];
-    if (globalMy.is_log) {
-        globalMy.console.log('[*]  调用了XMLHttpRequest_get_responseText,result => ', '' + result);
-    }
-    return result;
-};
+
 
 // Storage
 globalMy.Storage_getItem = function () {
@@ -1438,9 +1432,20 @@ globalMy.Node_get_childNodes = function () {
     var children = globalMy.value[name].childNodes;
     var this_ = globalMy.jsdom_element[name];
     result = this_.childNodes;
-    var old_length = globalMy.value[name].length;
+    var old_length;
     var length = result.length;
-    globalMy.value[globalMy.foundName(children)].length = length;
+    if (!children) {
+        children = globalMy.value[name]["childNodes"] = {};
+        Object.setPrototypeOf(children, NodeList.prototype);
+        var obj_name = globalMy.setfoundName(children);
+        globalMy.value[obj_name].length = length;
+        old_length = length;
+        globalMy.jsdom_element[obj_name] = result;
+    } else {
+        var childNodes_name = globalMy.foundName(children)
+        old_length = globalMy.value[childNodes_name].length;
+        globalMy.value[childNodes_name].length = length;
+    }
     if (result == undefined || result == null) {
     } else {
         for (var i = 0; i < length; i++) {
@@ -1990,17 +1995,20 @@ globalMy.Document_createElement = function () {
     Object.setPrototypeOf(globalMy.element[name], type.prototype);
     globalMy.jsdom_element[name] = call_result;
     result = globalMy.element[name];
+
     // 初始化一些重要的对象
     globalMy.value[foundName]["childNodes"] = {};
     Object.setPrototypeOf(globalMy.value[foundName]["childNodes"], NodeList.prototype);
     name = globalMy.setfoundName(globalMy.value[foundName]["childNodes"]);
     globalMy.value[name].length = 0;
     globalMy.jsdom_element[name] = call_result.childNodes;
+
     globalMy.value[foundName]["children"] = {};
     Object.setPrototypeOf(globalMy.value[foundName]["children"], HTMLCollection.prototype);
     name = globalMy.setfoundName(globalMy.value[foundName]["children"]);
     globalMy.value[name].length = 0;
     globalMy.jsdom_element[name] = call_result.children;
+
     globalMy.value[foundName]["style"] = {};
     Object.setPrototypeOf(globalMy.value[foundName]["style"], CSSStyleDeclaration.prototype);
     name = globalMy.setfoundName(globalMy.value[foundName]["style"]);
@@ -2297,14 +2305,28 @@ globalMy.Document_get_children = function () {
     var foundName = globalMy.foundName(this);
     result = globalMy.jsdom_element[foundName]['children'];
     if (result != null && result != undefined) {
-        var htmlCollection = {};
-        Object.setPrototypeOf(htmlCollection, HTMLCollection.prototype);
-        var result_name = globalMy.setfoundName(htmlCollection);
-        globalMy.value[result_name].length = result.length;
-        for (var i = 0; i < globalMy.value[result_name].length; i++) {
-            name = globalMy.foundJsdomName(result[i]);
-            htmlCollection[i] = globalMy.element[name];
+        var length = result.length;
+        var children = globalMy.value[foundName]['children'];
+        var result_name, old_length;
+        if (!children) {
+            children = {};
+            Object.setPrototypeOf(children, HTMLCollection.prototype);
+            result_name = globalMy.setfoundName(children);
+            globalMy.value[foundName]['children'] = children;
+            old_length = length;
+        } else {
+            result_name = globalMy.foundName(children);
+            old_length = globalMy.value[result_name].length;
         }
+        globalMy.value[result_name].length = length;
+        for (var i = 0; i < length; i++) {
+            var name = globalMy.foundJsdomName(result[i]);
+            children[i] = globalMy.element[name];
+        }
+        for (; old_length > length; old_length--) {
+            delete children[old_length - 1];
+        }
+        result = children;
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_get_children, result => ', '' + result);
@@ -2351,6 +2373,28 @@ globalMy.Document_get_readyState = function () {
     result = globalMy.value[foundName]['readyState'];
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了Document_get_readyState, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.Document_querySelector = function () {
+    if (!(this instanceof Document)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_querySelector, arguments => ', arguments);
+    }
+    var result;
+    //这里写方法实体
+    var name = globalMy.foundName(this);
+    var this_ = globalMy.jsdom_element[name];
+    result = this_.querySelector.apply(this_, arguments);
+    if (result == undefined || result == null) {
+    } else {
+        var result_name = globalMy.foundJsdomName(result);
+        result = globalMy.element[result_name];
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了Document_querySelector ' + '  result => ', '' + result);
     }
     return result;
 };
@@ -2513,14 +2557,20 @@ globalMy.HTMLElement_set_onload = function (val) {
     var result;
     var foundName = globalMy.foundName(this);
     if (val == undefined || val == null) {
-        globalMy.jsdom_element[foundName]['onload'] = val;
+        globalMy.value[foundName]['onload'] = val;
     } else {
         switch (typeof val) {
             case "object":
                 debugger;
                 break;
             case "function":
-                globalMy.jsdom_element[foundName]['onload'] = val;
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onload'] = callback;
+                globalMy.value[foundName]['onload'] = val;
                 break;
             default:
                 debugger;
@@ -2529,6 +2579,24 @@ globalMy.HTMLElement_set_onload = function (val) {
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLElement_set_onload' + '  result => ', '' + result);
     }
+};
+globalMy.HTMLElement_get_onload = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onload');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['onload'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onload, result => ', '' + result);
+    }
+    return result;
 };
 globalMy.HTMLElement_set_onerror = function (val) {
     if (!(this instanceof HTMLElement)) {
@@ -2540,17 +2608,23 @@ globalMy.HTMLElement_set_onerror = function (val) {
     var result;
     var foundName = globalMy.foundName(this);
     if (val == undefined || val == null) {
-        globalMy.jsdom_element[foundName]['onerror'] = val;
+        globalMy.value[foundName]['onerror'] = val;
     } else {
         switch (typeof val) {
             case "object":
                 debugger;
                 break;
             case "function":
-                globalMy.jsdom_element[foundName]['onerror'] = val;
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onerror'] = callback;
+                globalMy.value[foundName]['onerror'] = val;
                 break;
             default:
-            // globalMy.jsdom_element[foundName]['onerror'] = val;
+            // globalMy.value[foundName]['onerror'] = val;
         }
     }
     if (globalMy.is_log) {
@@ -2566,14 +2640,615 @@ globalMy.HTMLElement_get_onerror = function () {
     }
     var result;
     var foundName = globalMy.foundName(this);
-    result = globalMy.jsdom_element[foundName]['onerror'];
-    if (result != null && result != undefined) {
-
+    result = globalMy.value[foundName]['onerror'];
+    if (result == null && result == undefined) {
+        result = null;
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLElement_get_onerror, result => ', '' + result);
     }
     return result;
+};
+globalMy.HTMLElement_set_onclick = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onclick, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onclick'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onclick'] = callback;
+                globalMy.value[foundName]['onclick'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onclick'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onclick' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onclick = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onclick');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['onclick'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onclick, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmousedown = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousedown, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmousedown'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onclick'] = callback;
+                globalMy.value[foundName]['onclick'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmousedown'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousedown' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmousedown = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousedown');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['onmousedown'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousedown, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_get_onmouseenter = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseenter');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['onmouseenter'];
+    if (result == undefined || result == null) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseenter, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmouseenter = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseenter, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmouseenter'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmouseenter'] = callback;
+                globalMy.value[foundName]['onmouseenter'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmouseenter'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseenter' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmouseleave = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseleave');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmouseleave'];
+    if (result == undefined || result == null) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseleave, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmouseleave = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseleave, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.jsdom_element[foundName]['onmouseleave'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmouseleave'] = callback;
+                globalMy.value[foundName]['onmouseleave'] = val;
+                break;
+            default:
+                globalMy.jsdom_element[foundName]['onmouseleave'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseleave' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmousemove = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousemove');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmousemove'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousemove, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmousemove = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousemove, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.jsdom_element[foundName]['onmousemove'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmousemove'] = callback;
+                globalMy.value[foundName]['onmousemove'] = val;
+                break;
+            default:
+                globalMy.jsdom_element[foundName]['onmousemove'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousemove' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmouseout = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseout');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmouseout'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseout, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmouseout = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseout, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmouseout'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmouseout'] = callback;
+                globalMy.value[foundName]['onmouseout'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmouseout'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseout' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmouseover = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseover');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmouseover'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseover, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmouseover = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseover, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmouseover'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmouseover'] = callback;
+                globalMy.value[foundName]['onmouseover'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmouseover'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseover' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmouseup = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseup');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmouseup'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmouseup, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmouseup = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseup, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmouseup'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmouseup'] = callback;
+                globalMy.value[foundName]['onmouseup'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmouseup'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmouseup' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onmousewheel = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousewheel');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.jsdom_element[foundName]['onmousewheel'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onmousewheel, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onmousewheel = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousewheel, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.value[foundName]['onmousewheel'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onmousewheel'] = callback;
+                globalMy.value[foundName]['onmousewheel'] = val;
+                break;
+            default:
+                globalMy.value[foundName]['onmousewheel'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onmousewheel' + '  result => ', '' + result);
+    }
+};
+globalMy.HTMLElement_get_onselectstart = function () {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onselectstart');
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    result = globalMy.value[foundName]['onselectstart'];
+    if (result == null && result == undefined) {
+        result = null;
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_get_onselectstart, result => ', '' + result);
+    }
+    return result;
+};
+globalMy.HTMLElement_set_onselectstart = function (val) {
+    if (!(this instanceof HTMLElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onselectstart, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.jsdom_element[foundName]['onselectstart'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                var callback = function () {
+                    debugger;
+                    var foundName = globalMy.foundJsdomName(this);
+                    val.apply(globalMy.element[foundName], []);
+                }
+                globalMy.jsdom_element[foundName]['onselectstart'] = callback;
+                globalMy.value[foundName]['onselectstart'] = val;
+                break;
+            default:
+                globalMy.jsdom_element[foundName]['onselectstart'] = val;
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLElement_set_onselectstart' + '  result => ', '' + result);
+    }
+};
+
+// HTMLScriptElement
+globalMy.HTMLScriptElement_set_src = function (val) {
+    if (!(this instanceof HTMLScriptElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLScriptElement_set_src, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.jsdom_element[foundName]['src'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                debugger;
+                break;
+            default:
+                globalMy.jsdom_element[foundName]['src'] = val;
+
+                // 针对某滑块的
+                if (val.indexOf("initializeJsonp") != -1) {
+                    var func_callback = val.split("callback=")[1];
+                    setTimeout(function () {
+                        eval(`debugger;` + func_callback + `({"result":{"msg":"success","success":true},"success":true});`)
+                    }, 0);
+                    setTimeout(() => {
+                        var onload = this.onload;
+                        if (onload) {
+                            onload.apply(this, [globalMy.createEvent("load", this)]);
+                        }
+                    }, 0);
+                } else if (val === "https://ynuf.aliapp.org/w/wu.json") {
+                    setTimeout(function () {
+                        eval(`try{umx.wu('GBE5B6E2D8D44843ED13276FF9649C0AD2F771001A65C4AE1EF');}catch(e){}
+try{__fycb('GBE5B6E2D8D44843ED13276FF9649C0AD2F771001A65C4AE1EF');}catch(e){}`)
+                    }, 0);
+                    setTimeout(() => {
+                        var onload = this.onload;
+                        if (onload) {
+                            onload.apply(this, [globalMy.createEvent("load", this)]);
+                        }
+                    }, 0);
+                }
+
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLScriptElement_set_src' + '  result => ', '' + result);
+    }
+};
+
+// HTMLImageElement
+globalMy.HTMLImageElement_set_src = function (val) {
+    if (!(this instanceof HTMLImageElement)) {
+        throw new TypeError("Illegal invocation");
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLImageElement_set_src, 传参val => ' + val);
+    }
+    var result;
+    var foundName = globalMy.foundName(this);
+    if (val == undefined || val == null) {
+        globalMy.jsdom_element[foundName]['src'] = val;
+    } else {
+        switch (typeof val) {
+            case "object":
+                debugger;
+                break;
+            case "function":
+                debugger;
+                break;
+            default:
+                globalMy.jsdom_element[foundName]['src'] = val;
+                setTimeout(() => {
+                    var onload = this.onload;
+                    if (onload) {
+                        onload.apply(this, [globalMy.createEvent("load", this)]);
+                    }
+                }, 0);
+
+        }
+    }
+    if (globalMy.is_log) {
+        globalMy.console.log('[*]  调用了HTMLImageElement_set_src' + '  result => ', '' + result);
+    }
 };
 
 // HTMLStyleElement
@@ -2681,10 +3356,10 @@ globalMy.HTMLFrameElement_get_contentWindow = function () {
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
         var contentWindow = globalMy.value[foundName]['contentWindow'];
-        if (!contentWindow){
+        if (!contentWindow) {
             result = globalMy.newWindow(globalMy.jsdom_element[foundName]);
             globalMy.value[foundName]['contentWindow'] = result;
-        }else result = contentWindow;
+        } else result = contentWindow;
     }
     if (globalMy.is_log) {
         globalMy.console.log('[*]  调用了HTMLFrameElement_get_contentWindow, result => ', '' + result);
@@ -2717,10 +3392,10 @@ globalMy.HTMLIFrameElement_get_contentWindow = function () {
     result = globalMy.jsdom_element[foundName]['contentWindow'];
     if (result != null && result != undefined) {
         var contentWindow = globalMy.value[foundName]['contentWindow'];
-        if (!contentWindow){
-            result = globalMy.newWindow( globalMy.jsdom_element[foundName]);
+        if (!contentWindow) {
+            result = globalMy.newWindow(globalMy.jsdom_element[foundName]);
             globalMy.value[foundName]['contentWindow'] = result;
-        }else result = contentWindow;
+        } else result = contentWindow;
 
     }
     if (globalMy.is_log) {
