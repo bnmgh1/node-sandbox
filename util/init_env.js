@@ -1,3 +1,4 @@
+
 // 堆栈拦截处
 Utils.Error_get_stack = function () {
     // 改堆栈真的会有不少奇奇怪怪的bug
@@ -28,22 +29,12 @@ globalMy.initEnv = function () {
     var i;
     for (i in globalMy.throw_err) {
         // 删除重复对象,否则会导致我们注册函数到global下时失败
-        if (i in this) {
-            delete this[i];
-        }
-
+        if (i in this) { delete this[i]; }
         var err = globalMy.throw_err[i];
         // 自定义的构造函数 比如Document. 这里只是随便生成了一个函数
         if (!(i in globalMy)) {
-            if (err.length == 2) {
-                if (err[1] == ""){
-                    globalMy[i] = function () {
-                    globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
-                    throw new TypeError("Illegal constructor");
-                };
-                }
-                else{
-                    // 如果new 传参少于某长度就会报错.
+            if (err.length == 2 && err[1] != "") {
+                // 如果new 传参少于某长度就会报错.
                 var less_code = globalMy.arg_less_code.replace('replace', i).replace("1", err[1].toString());
                 var len = err[1];
                 globalMy[i] = function () {
@@ -52,8 +43,6 @@ globalMy.initEnv = function () {
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
-                }
-
             } else {
                 // 说明可以直接new
                 globalMy[i] = function () {
@@ -63,21 +52,22 @@ globalMy.initEnv = function () {
         }
         var data = [globalMy[i]];
         // 传入报错信息， 底层生成一个构造函数, 套壳
-        if (err.length != 0) {
+        if (err.length > 0) {
             // 如果是常规报错走这里, 否则就是特殊报错
             if (err[0] == i) {
                 // 非构造函数调用会报错
                 data.push(globalMy.err_code.replace("replace", err[0]));
             } else data.push(err[0]);
+            if (err[1] == "") {
+                data.push("");
+            }
         }
         wanfeng[i] = wanfeng.SetNative(data, i);
         Object.setPrototypeOf(wanfeng[i], Function.prototype);
         Object.setPrototypeOf(wanfeng[i].prototype, Object.prototype);
     }
-
     Utils.initEnv();
     Utils.register();
-
 }
 globalMy.initEnv.apply(this, []);
 
