@@ -53,7 +53,7 @@ Utils.setImmutableProto(this);
 
 2. DeleteProperty
 作用: 强行移除属性, 即使configurable为false也能直接删除. (感谢零点大佬提供的代码)
-缺点: 目前我只用在了Promise对象删除caller以及arguments属性, 强制删除可能引发bug, 所以大多时候我用v8底层函数
+缺点: 目前我只用在了Promise构造函数删除caller以及arguments属性(底层自带的没有这2个属性), 强制删除可能引发bug, 所以大多时候我用v8底层函数
 强制修改描述符之后再用delete关键字进行安全的删除.
 
 3. xtd
