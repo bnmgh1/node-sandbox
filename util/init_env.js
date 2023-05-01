@@ -1,76 +1,97 @@
 
 // 堆栈拦截处
 Utils.Error_get_stack = function () {
-    // 改堆栈真的会有不少奇奇怪怪的bug
-    var stack = arguments[0];
-    // var stack = arguments[0].split("\n");
-    // var length = stack.length;
-    // for (var i = 0; i < length; i++) {
-    //     if (stack[i].indexOf(`at globalMy.`) > -1) {
-    //         stack.splice(i, 1);
-    //         continue;
-    //     } else if (stack[i].indexOf(`.runInContext (node:`) > -1) {
-    //         stack.splice(i, length - i + 1);
-    //         break;
-    //     }
-    // }
-    // stack = stack.join('\n').replace(/evalmachine.<anonymous>/g, "xxx.js");
-    // if (stack.indexOf("DOMException: ") > -1) {
-    //     stack = stack.replace("Error: ", "")
-    // }
-    // // // // console.log("请自行修改堆栈,不想修改就直接return arguments[0]");
+    /* 改堆栈真的会有不少奇奇怪怪的bug, 尤其是在debug的时候, 容易崩溃 */
+    let stack = arguments[0].split("\n");
+    let length = stack.length;
+    for (let i = 1; i < length;) {
+        if (stack[i].indexOf("    at new globalMy.") === 0 || stack[i].indexOf("    at globalMy.") === 0 || stack[i].indexOf("    at new ") === 0 || stack[i].indexOf(":") < 0 || stack[i].indexOf("./test.js") > -1) {
+            stack.splice(i, 1);
+            length -= 1;
+            continue;
+        } else if (stack[i].indexOf(`.runInContext (node:`) > -1) {
+            stack.splice(i, length - i + 1);
+            break;
+        }
+        i++;
+    }
+    stack = stack.join('\n');
+    // vm堆栈改写
+    stack = stack.replace(/evalmachine.<anonymous>/g, globalMy.memory.script_name || "dsadczxf.js").replace(/\(eval at globalMy\.initSource \((.*?)\)/g, '($1');
+
+    // vm2
+    // stack = stack.replace(/([\w\d:\\-]+\/setup-sandbox\.js)/g, globalMy.memory.script_name || "dsadczxf.js");
     console.log("报错堆栈 -> ", stack);
     return stack;
 }
 
+
 this.cost_time = +new Date;
 
+globalMy.rePromise = function () {
+    "use strict";
+    delete this.Promise;
+    wanfeng["Promise"] = wanfeng.SetNative(globalMy["Promise"], "Promise", true, 1);
+    Object.setPrototypeOf(wanfeng["Promise"], Function.prototype);
+    Object.defineProperty(wanfeng["Promise"], Symbol.species, {
+        configurable: true,
+        enumerable: false,
+        get: wanfeng.SetNative(function () {
+            return wanfeng["Promise"];
+        }, "get [Symbol.species]", false, 0),
+        set: undefined,
+    });
+    wanfeng.DeleteProperty(wanfeng["Promise"], "caller");
+    wanfeng.DeleteProperty(wanfeng["Promise"], "arguments");
+}
 globalMy.initEnv = function () {
-    var i;
-    for (i in globalMy.throw_err) {
+    for (let i in globalMy.memory.throw_err) {
         // 删除重复对象,否则会导致我们注册函数到global下时失败
-        if (i in this) { delete this[i]; }
-        var err = globalMy.throw_err[i];
+        if (i in this) {
+            delete this[i];
+        }
+        let err = globalMy.memory.throw_err[i];
         // 自定义的构造函数 比如Document. 这里只是随便生成了一个函数
         if (!(i in globalMy)) {
-            if (err.length == 2 && err[1] != "") {
+            if (err.length === 2 && err[1] !== "") {
                 // 如果new 传参少于某长度就会报错.
-                var less_code = globalMy.arg_less_code.replace('replace', i).replace("1", err[1].toString());
-                var len = err[1];
+                let len = err[1];
+                let less_code = globalMy.arg_less_code.replace('replace', i).replace("1", len.toString());
+                let err_code = globalMy.err_code.replace("replace", err[0]);
+                // 基本是1
                 globalMy[i] = function () {
+                    if (!new.target) {
+                        throw new TypeError(err_code);
+                    }
                     if (arguments.length < len) {
                         throw new TypeError(less_code);
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
+            } else if (err.length === 0 || err[1] === "") {
+                globalMy[i] = function () {
+                    throw new TypeError("Illegal constructor");
+                }
             } else {
                 // 说明可以直接new
+                let err_code = globalMy.err_code.replace("replace", err[0]);
                 globalMy[i] = function () {
+                    if (!new.target) {
+                        throw new TypeError(err_code);
+                    }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
                 };
             }
         }
-        var data = [globalMy[i]];
-        // 传入报错信息， 底层生成一个构造函数, 套壳
-        if (err.length > 0) {
-            // 如果是常规报错走这里, 否则就是特殊报错
-            if (err[0] == i) {
-                // 非构造函数调用会报错
-                data.push(globalMy.err_code.replace("replace", err[0]));
-            } else data.push(err[0]);
-            if (err[1] == "") {
-                data.push("");
-            }
-        }
-        wanfeng[i] = wanfeng.SetNative(data, i);
+        wanfeng[i] = wanfeng.SetNative(globalMy[i], i, true, 0);
         Object.setPrototypeOf(wanfeng[i], Function.prototype);
-        Object.setPrototypeOf(wanfeng[i].prototype, Object.prototype);
     }
+    // 重写Promise
+    globalMy.rePromise.call(this);
     Utils.initEnv();
-    Utils.register();
+    Utils.initWindow();
 }
-globalMy.initEnv.apply(this, []);
-
+globalMy.initEnv.call(this);
 globalMy.console.log("node环境框架初始化耗时:", +new Date - cost_time, "毫秒");
 
 cost_time = +new Date;
@@ -697,6 +718,12 @@ globalMy.initWindow = function (dom_window, is_init) {
         "onchange": null,
         "isExtended": false
     }
+
+    Utils.setImmutableProto(location);
+    Utils.setImmutableProto(Location.prototype);
+    Utils.setImmutableProto(Window.prototype);
+    Utils.setImmutableProto(Window.prototype.__proto__);
+    Utils.setImmutableProto(EventTarget.prototype);
 
     return globalMy.element[window_name];
 }

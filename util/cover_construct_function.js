@@ -1,5 +1,8 @@
 // 构造函数实现覆盖
 globalMy.RTCPeerConnection = function () {
+    if (!new.target) {
+        throw new TypeError("Failed to construct 'RTCPeerConnection': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
+    }
     var name = globalMy.setfoundName(this);
     globalMy.value[name] = {
         "localDescription": null,
@@ -33,6 +36,9 @@ globalMy.Image = function () {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> Image, ", "arguments => ", arguments)
     }
+    if (!new.target) {
+        throw new TypeError("Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
+    }
     var name = globalMy.setfoundName(this);
     globalMy.jsdom_element[name] = globalMy.dom_window.document.createElement("img");
     return this;
@@ -41,6 +47,9 @@ globalMy.Image = function () {
 globalMy.XMLHttpRequest = function XMLHttpRequest() {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> XMLHttpRequest, ", "arguments => ", arguments)
+    }
+    if (!new.target) {
+        throw new TypeError("Failed to construct 'XMLHttpRequest': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
     }
     let xhr = {};
     Object.setPrototypeOf(xhr, XMLHttpRequest.prototype);
@@ -68,6 +77,9 @@ globalMy.WebSocket = function WebSocket(x) {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> WebSocket, ", "arguments => ", arguments)
     }
+    if (!new.target) {
+        throw new TypeError("Failed to construct 'WebSocket': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
+    }
     if (x === 'Create\x20WebSocket' || x === "itsgonnafail") {
         throw new DOMException("DOMException: Failed to construct 'WebSocket': The URL 'itsgonnafail' is invalid.")
     }
@@ -76,6 +88,9 @@ globalMy.WebSocket = function WebSocket(x) {
 globalMy.MutationObserver = function MutationObserver() {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> MutationObserver, ", "arguments => ", arguments)
+    }
+    if (!new.target) {
+        throw new TypeError("Failed to construct 'MutationObserver': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
     }
     if (arguments.length < 1) {
         throw new TypeError(`Failed to construct 'MutationObserver': 1 argument required, but only 0 present.`)
@@ -179,6 +194,7 @@ globalMy.OffscreenCanvas = function OffscreenCanvas(width, height) {
     return OffscreenCanvas;
 }
 
+/* 这个旧版框架没实现 */
 globalMy.Worker = function Worker() {
     if (globalMy.is_log) {
         globalMy.console.log("[*]  new 构造函数 -> Worker, ", "arguments => ", arguments)
@@ -255,7 +271,7 @@ globalMy.Promise_then = function (onResolved, onRejected) {
     return new Promise((resolve, reject) => {
         function handle(callback) {
             try {
-                const result = onResolved(that.data)
+                const result = callback(that.data)
                 if (result instanceof Promise) {
                     result.then(resolve, reject
                         // value =>{

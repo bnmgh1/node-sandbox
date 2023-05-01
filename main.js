@@ -6,16 +6,15 @@ const vm = require("vm");
 const crypto = require('crypto');
 const jsdom = require("jsdom");
 const {JSDOM} = jsdom;
-var wanfeng = require("wanfeng");
-
+let wanfeng = require("wanfeng");
 console.log("导包耗时:", +new Date - a, "毫秒");
 a = +new Date;
 
 
 // html = `<div id="baxia-password" style="display: block;"><div class=" custom-dialog-wrapper" style="display: block;"><iframe id="baxia-dialog-content" frameborder="none" src="https://login.taobao.com//newlogin/login.do/_____tmd_____/punish?x5secdata=xbb285061a9d6d6ae38b7729e5a610cd201678606637a-717315356a-1443198347abczc2dl15398888102a__bx__login.taobao.com%3A443%2Fnewlogin%2Flogin.do&amp;x5step=2&amp;ncLanguage=zh_CN" style="height: 34px; position: static;"></iframe></div></div>`;
 
-// html = fs.readFileSync(`./ret.html`);
-html = fs.readFileSync(`./tj140.html`);
+html = fs.readFileSync(`./ret.html`);
+// html = fs.readFileSync(`./tj140.html`);
 let configure = {
     // url: "http://epub.cnipa.gov.cn/SW/",
     // url: 'https://www.zhihu.com/search?q=%E8%A2%AB%E6%89%93%E8%BF%98%E6%89%8B%E4%B8%8D%E5%86%8D%E8%AE%A4%E5%AE%9A%E4%B8%BA%E4%BA%92%E6%AE%B4&utm_content=search_hot&type=content',
@@ -51,8 +50,13 @@ globalMy = {
 
 
 globalMy.newWindow = function (ifr) {
+    let wf = {
+        xtd: wanfeng.xtd,
+        SetNative: wanfeng.SetNative,
+        DeleteProperty: wanfeng.DeleteProperty,
+    };
     const sandbox = {
-        wanfeng: wanfeng,
+        wanfeng: wf,
         globalMy: {
             crypto: crypto,
             node_Blob: Blob,
@@ -64,7 +68,7 @@ globalMy.newWindow = function (ifr) {
     }
 
     var code = globalMy_js + init_env + envCode + "\r\n" + ``;
-    vm.runInNewContext(code.replace("debugger;",""), sandbox);
+    vm.runInNewContext(code.replace("debugger;", ""), sandbox);
     return sandbox.zzz_mark_key;
 }
 
@@ -72,14 +76,19 @@ globalMy.newWindow = function (ifr) {
 function runRsVmp() {
     // 个别rs第一个次获取body为null, 所以第一次返回null给他
     globalMy.first_get_body = true;
+    let wf = {
+        xtd: wanfeng.xtd,
+        SetNative: wanfeng.SetNative,
+        DeleteProperty: wanfeng.DeleteProperty,
+    };
     const sandbox = {
-        wanfeng: wanfeng,
+        wanfeng: wf,
         globalMy: globalMy,
         console: console,
     }
     let workCode = fs.readFileSync("./work/rsvmp.js");
     a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `globalMy.console.log(document.cookie);\n` +
+    let code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + `globalMy.console.log(document.cookie);\n` +
         //         `new Promise((resolve, reject) => {
         //     var event = globalMy.createEvent("load")
         //     resolve(event);
@@ -188,65 +197,8 @@ function runAcSign() {
     console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
 }
 
-function run225() {
-    const sandbox = {
-        wanfeng: wanfeng,
-        globalMy: globalMy,
-        console: console,
-    }
-    let workCode = fs.readFileSync("./work/ali225.js");
-    a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
-    vm.runInNewContext(code, sandbox);
-    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
-}
-
-// 没初始化应该, 跟浏览器跑出来的调用不一样。。。
-function run140() {
-    const sandbox = {
-        wanfeng: wanfeng,
-        globalMy: globalMy,
-        console: console,
-    }
-    let workCode = fs.readFileSync("./work/ali140.js");
-    a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode;
-    vm.runInNewContext(code, sandbox);
-    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
-}
-
-function runShape() {
-    const sandbox = {
-        wanfeng: wanfeng,
-        globalMy: globalMy,
-        console: console,
-    }
-    let workCode = fs.readFileSync("./work/shape.js");
-    a = +new Date;
-    var code = "debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode + `globalMy.console.log(get_bmobdb());\ndebugger;`;
-    vm.runInNewContext(code, sandbox);
-    console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
-}
-
-// runRsVmp();
+runRsVmp();
 // runBoss();
 // runZhihu();
 // runX81();
 // runAcSign();
-// run225();
-run140();
-// runShape();
-
-//// vm2
-// const sandbox = {
-//     wanfeng: wanfeng,
-//     globalMy: globalMy,
-//     console: console,
-// }
-// var vm2 = new VM({ sandbox: sandbox });
-// let workCode = fs.readFileSync("./work/rsvmp.js");
-// var script = new VMScript("debugger;\r\n" + globalMy_js + init_env + envCode + "\r\n" + workCode + "\r\n" + endCode, './zcj.js');
-// console.log("jsdom初始化 + new VMScript 耗时:", +new Date - a, "毫秒");
-// a = +new Date;
-// vm2.run(script);
-// console.log("运行环境Js + 工作Js 耗时:", +new Date - a, "毫秒");
