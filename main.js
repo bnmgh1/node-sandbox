@@ -76,13 +76,13 @@ globalMy.newWindow = function (ifr) {
 function runRsVmp() {
     // 个别rs第一个次获取body为null, 所以第一次返回null给他
     globalMy.first_get_body = true;
-    let wf = {
-        xtd: wanfeng.xtd,
-        SetNative: wanfeng.SetNative,
-        DeleteProperty: wanfeng.DeleteProperty,
-    };
+    // let wf = {
+    //     xtd: wanfeng.xtd,
+    //     SetNative: wanfeng.SetNative,
+    //     DeleteProperty: wanfeng.DeleteProperty,
+    // };
     const sandbox = {
-        wanfeng: wf,
+        wanfeng: wanfeng,
         globalMy: globalMy,
         console: console,
     }
