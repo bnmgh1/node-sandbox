@@ -48,8 +48,10 @@ Utils.setImmutableProto(this);
 所以使用的时候需要require("wanfeng")
 
 1. setNative
-作用: 给函数套壳, 这样的话就不用考虑函数toString检测问题了. 第一个参数是函数, 第二个参数是函数名称, 第三个是否是构造函数. 非构造函数则传false, new 函数将会报错.
-第四个参数的函数的length. 返回壳函数.
+作用: ~~给函数套壳, 这样的话就不用考虑函数toString检测问题了.
+~~第一个参数是函数, 第二个参数是函数名称, 第三个是否是构造函数. 非构造函数则传false, new 函数将会报错.
+第四个参数的函数的length. 返回壳函数.~~
+这样得到的函数会导致无法被回收, 内存一直增加, 所以换了写法...现在只对函数toString进行保护, 其他需要的自行封装, 比如判断是否是new关键字调用, 以及函数长度等... (感谢零点大佬提供的代码) 
 
 2. DeleteProperty
 作用: 强行移除属性, 即使configurable为false也能直接删除. (感谢零点大佬提供的代码)
@@ -59,17 +61,23 @@ Utils.setImmutableProto(this);
 3. xtd
 作用: 生成一个type为undefined的对象. (感谢泰迪大佬提供的代码)
 
-ps: 同时, 每份虚拟机里的wanfeng又是存放构造函数的容器对象.(window下的可能被改写, 原先的得保存起来)
+4. ClearMemory
+作用: 通知引擎进行垃圾回收.这将使 V8 尝试执行一次完整的垃圾回收, 并尝试释放未使用的内存. 这样无限创建vm虚拟机也能保持内存占用处在稳定的区间.
+
 
 4. api例子
 ```javascript
-wanfeng.SetNative(function(){}, "get name", true, 0);
+function a(){}
+wanfeng.SetNative(a, "get name");
 ```
 ```javascript
 wanfeng.DeleteProperty({}, "a");
 ```
 ```javascript
 let undefined_obj = new wanfeng.xtd;
+```
+```javascript
+wanfeng.ClearMemory();
 ```
 
 ## node框架使用说明
@@ -120,6 +128,9 @@ node和js框架代码更新了些许东西, 最新的node处理了一些细节�
 
 初始化这块, 就是将保护后的构造函数放到wanfeng这个对象里(每个vm传一个wanfeng对象进去, 不要直接传wanfeng模块, 看main.js的rsvmp函数), 然后调用Utils.initEnv(), Utils.initWindow()就行了.
 
+2023-05-08
+
+修改了wanfeng.SetNative的底层源码, 所以使用方式也改变了... wanfeng新增ClearMemory api, 消耗内存现在稳定了呜呜~ 
 
 ## 警告
 

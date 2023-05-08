@@ -83,8 +83,7 @@ globalMy.initEnv = function () {
                 };
             }
         }
-        wanfeng[i] = wanfeng.SetNative(globalMy[i], i, true, 0);
-        Object.setPrototypeOf(wanfeng[i], Function.prototype);
+        wanfeng.SetNative(globalMy[i], i);
     }
     // 重写Promise
     globalMy.rePromise.call(this);
