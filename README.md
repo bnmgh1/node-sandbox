@@ -119,15 +119,15 @@ node和js框架代码更新了些许东西, 最新的node处理了一些细节�
 
 2023-03-29
 
-后续不更新了, js框架是去年写的, 很多实现的很有问题. setTimeout以及添加事件触发事件都有问题. 如果大佬们有关于node框架的一些想法或者思路可以一起探讨~
+后续js框架不更新了, 因为js框架是去年写的, 很多实现的很有问题. setTimeout以及添加事件触发事件都有问题(我现在也用原生的了~). 如果大佬们有关于node框架的一些想法或者思路可以一起探讨~
 
 2023-05-01
 
-增加了node的一些api, 以及去除掉模块自带的构造函数, 改用wanfeng.SetNative来生成壳构造函数. 这样new一份虚拟机的话, 这些构造函数就不相等了, 相互独立.
+增加了node的一些api, 以及去除掉模块自带的构造函数, ~~改用wanfeng.SetNative来生成壳构造函数~~改用wanfeng.SetNative保护函数toString. 这样new一份虚拟机的话, 这些构造函数就不相等了, 相互独立.
 
 修改了vm的源码, 过了一些有问题的检测点. 比如this.hasOwnProperty("hasOwnProperty") === true, vm的this只要继承谁, 就会直接拥有这个属性. 能遍历到这个key, 但是用getOwnProperty又获取到undefined. 所以修改了点东西.
 
-初始化这块, 就是将保护后的构造函数放到wanfeng这个对象里(每个vm传一个wanfeng对象进去, 不要直接传wanfeng模块, 看main.js的rsvmp函数), 然后调用Utils.initEnv(), Utils.initWindow()就行了.
+初始化这块, ~~就是将保护后的构造函数放到wanfeng这个对象里(每个vm传一个wanfeng对象进去, 不要直接传wanfeng模块, 看main.js的rsvmp函数)~~, 看init_env.js. 生成构造函数放在globalMy下, 然后wanfeng.SetNative保护一下.再调用Utils.initEnv(), Utils.initWindow()就行了.
 
 2023-05-08
 
