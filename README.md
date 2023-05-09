@@ -51,7 +51,7 @@ Utils.setImmutableProto(this);
 作用: ~~给函数套壳, 这样的话就不用考虑函数toString检测问题了.
 ~~第一个参数是函数, 第二个参数是函数名称, 第三个是否是构造函数. 非构造函数则传false, new 函数将会报错.
 第四个参数的函数的length. 返回壳函数.~~
-这样得到的函数会导致无法被回收, 内存一直增加, 所以换了写法...现在只对函数toString进行保护, 其他需要的自行封装, 比如判断是否是new关键字调用, 以及函数长度等... (感谢零点大佬提供的代码) 
+之前保护这样得到的函数会导致无法被回收, 内存一直增加, 所以换了写法...现在只对函数toString进行保护, 其他需要的自行封装, 比如判断是否是new关键字调用, 以及函数长度等... (感谢零点大佬提供的代码) 
 
 2. DeleteProperty
 作用: 强行移除属性, 即使configurable为false也能直接删除. (感谢零点大佬提供的代码)
@@ -68,7 +68,8 @@ Utils.setImmutableProto(this);
 4. api例子
 ```javascript
 function a(){}
-wanfeng.SetNative(a, "get name");
+/* 现在只传函数进去, 然后的话函数的name如果是a ,那么toString就会得到 function a(){ [native code] } */
+wanfeng.SetNative(a);
 ```
 ```javascript
 wanfeng.DeleteProperty({}, "a");
@@ -98,11 +99,11 @@ ps : 核心就是在node底层定义了一层拦截器, 然后最终又走到我
 
 ## 注意事项
 
-1. 框架默认重写Promise, 用原生的Promise就不要调用globalMy.rePromise函数即可
+1. 框架默认重写Promise, 用原生的Promise就不要调用globalMy. rePromise函数即可 (原生的会更好用, 有个库可以直接将异步转同步, 注意node的setTimeout的一些检测就好了...)
 
 2. ~~不要代理任何对象,代理对象调用方法时会直接报错,和浏览器一样的机制。建议在方法调用时打印,像我的js框架一样。~~ 现在可以代理了, 可以自己判断代理对象调用方法时要不要报错.
 
-3. node无法使用正常的vm2模块, 改用vm模块了(不建议用execjs调, 真的很蠢... 持续调用还是建议起服务接口)
+3. node无法使用正常的vm2模块, 改用vm模块了(不建议用execjs调, 真的很蠢... 持续调用还是建议起服务接口), vm小小的魔改了下, 去掉了一些检测点...
 
 4. 非构造函数的原型对象, 就实现了个别, 比如WindowProperties这种的原型对象。这种会存放在Utils中, 例如Utils.WindowProperties_ptototype。
 
