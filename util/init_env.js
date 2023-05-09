@@ -258,31 +258,31 @@ globalMy.initEnv = function () {
                 let less_code = globalMy.arg_less_code.replace('replace', i).replace("1", len.toString());
                 let err_code = globalMy.err_code.replace("replace", err[0]);
                 // 基本是1
-                globalMy[i] = function () {
+                globalMy[i] = new Function(`return function ${i}() {
                     if (!new.target) {
-                        throw new TypeError(err_code);
+                        throw new TypeError("${err_code}");
                     }
                     if (arguments.length < len) {
-                        throw new TypeError(less_code);
+                        throw new TypeError("${less_code}");
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
-                };
+                }`)();
             } else if (err.length === 0 || err[1] === "") {
-                globalMy[i] = function () {
+                globalMy[i] =  new Function(`return function ${i}() {
                     throw new TypeError("Illegal constructor");
-                }
+                }`)();
             } else {
                 // 说明可以直接new
                 let err_code = globalMy.err_code.replace("replace", err[0]);
-                globalMy[i] = function () {
+                globalMy[i] = new Function(`return function ${i}() {
                     if (!new.target) {
-                        throw new TypeError(err_code);
+                        throw new TypeError("${err_code}");
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
-                };
+                }`)();
             }
         }
-        wanfeng.SetNative(globalMy[i], i);
+        wanfeng.SetNative(globalMy[i]);
     }
     // 重写Promise
     globalMy.rePromise.call(this);
