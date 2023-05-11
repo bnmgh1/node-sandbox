@@ -230,18 +230,22 @@ globalMy.rePromise = function () {
         })
     }
 
-    wanfeng.SetNative(globalMy["Promise"], "Promise", true, 1);
-
     Object.defineProperty(globalMy["Promise"], Symbol.species, {
         configurable: true,
         enumerable: false,
-        get: wanfeng.SetNative(function () {
+        get: function () {
             return wanfeng["Promise"];
-        }, "get [Symbol.species]", false, 0),
+        },
         set: undefined,
     });
-    wanfeng.DeleteProperty(globalMy["Promise"], "caller");
-    wanfeng.DeleteProperty(globalMy["Promise"], "arguments");
+    wanfeng.SetNative(globalMy["Promise"]);
+    wanfeng.SetNative(Object.getOwnPropertyDescriptor(globalMy["Promise"], Symbol.species).get);
+    //  "get [Symbol.species]"
+    Utils.defineProperty(globalMy["Promise"], "caller", 0);
+    Utils.defineProperty(globalMy["Promise"], "arguments", 0);
+    delete globalMy["Promise"].caller;
+    delete globalMy["Promise"].arguments;
+
 }
 globalMy.initEnv = function () {
     for (let i in globalMy.memory.throw_err) {
@@ -288,6 +292,7 @@ globalMy.initEnv = function () {
     globalMy.rePromise.call(this);
     Utils.initEnv();
     Utils.initWindow();
+
 }
 globalMy.initEnv.call(this);
 globalMy.console.log("node环境框架初始化耗时:", +new Date - cost_time, "毫秒");
