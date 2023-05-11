@@ -234,7 +234,7 @@ globalMy.rePromise = function () {
         configurable: true,
         enumerable: false,
         get: function () {
-            return wanfeng["Promise"];
+            return globalMy["Promise"];
         },
         set: undefined,
     });
