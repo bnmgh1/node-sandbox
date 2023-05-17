@@ -238,8 +238,8 @@ globalMy.rePromise = function () {
         },
         set: undefined,
     });
-    wanfeng.SetNative(globalMy["Promise"]);
-    wanfeng.SetNative(Object.getOwnPropertyDescriptor(globalMy["Promise"], Symbol.species).get);
+    Utils.setNative(globalMy["Promise"]);
+    Utils.setNative(Object.getOwnPropertyDescriptor(globalMy["Promise"], Symbol.species).get);
     //  "get [Symbol.species]"
     Utils.defineProperty(globalMy["Promise"], "caller", 0);
     Utils.defineProperty(globalMy["Promise"], "arguments", 0);
@@ -286,7 +286,7 @@ globalMy.initEnv = function () {
                 }`)();
             }
         }
-        wanfeng.SetNative(globalMy[i]);
+        Utils.setNative(globalMy[i]);
     }
     // 重写Promise
     globalMy.rePromise.call(this);
