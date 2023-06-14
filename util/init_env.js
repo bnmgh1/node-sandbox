@@ -266,7 +266,7 @@ globalMy.initEnv = function () {
                     if (!new.target) {
                         throw new TypeError("${err_code}");
                     }
-                    if (arguments.length < len) {
+                    if (arguments.length < ${len}) {
                         throw new TypeError("${less_code}");
                     }
                     globalMy.console.log("[*]  new 构造函数 ->", this[Symbol.toStringTag], ", arguments =>", arguments);
